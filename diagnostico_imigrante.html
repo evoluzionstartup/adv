@@ -30,7 +30,6 @@
             text-align: left;
             padding: 10px 14px;
             border-radius: 18px 18px 18px 2px; /* Borda arredondada diferenciada */
-            white-space: pre-wrap; /* Adicionado para respeitar quebras de linha e espaços */
         }
         .error-message {
             background-color: #fee2e2; /* bg-red-100 */
@@ -41,6 +40,25 @@
             width: 100%;
             text-align: center;
         }
+        .action-buttons-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-center;
+            gap: 8px;
+            margin-top: 16px;
+            margin-bottom: 16px;
+        }
+        .action-button {
+            @apply bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold transition;
+            flex-grow: 1; /* Permite que os botões cresçam para preencher o espaço */
+            min-width: 120px; /* Garante um tamanho mínimo */
+        }
+        .action-button.secondary {
+            @apply bg-gray-300 hover:bg-gray-400 text-gray-800;
+        }
+        .flag-icon {
+            margin-right: 8px;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-900 font-sans">
@@ -49,11 +67,14 @@
 
         <!-- Seção do Chatbot Gemini -->
         <section id="chatSection" class="bg-white p-6 rounded-lg shadow-lg border-t-4 border-blue-600">
-            <!-- Título do container com emojis (ADICIONADO AQUI) -->
-            <h2 class="text-2xl font-bold text-blue-800 mb-4 text-center">✍️🤝🌐 Converse com nosso Assistente Humanitário!</h2>
             
             <div id="chatMessages" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
                 <!-- Mensagens do chat aparecerão aqui -->
+            </div>
+
+            <!-- Container para botões de ação dinâmicos -->
+            <div id="actionButtonsContainer" class="action-buttons-container">
+                <!-- Botões serão injetados aqui via JavaScript -->
             </div>
 
             <div class="flex mt-4">
@@ -87,13 +108,22 @@
         const chatMessages = document.getElementById('chatMessages');
         const chatError = document.getElementById('chatError');
         const chatLoading = document.getElementById('chatLoading');
-        const chatSection = document.getElementById('chatSection'); 
+        const actionButtonsContainer = document.getElementById('actionButtonsContainer');
+
+        let currentLanguage = 'pt'; // Idioma padrão (Português)
+        // Estágios da conversa
+        let conversationStage = 'initial_greeting'; // Novo estágio inicial
+        let collectedData = {
+            originCountry: null,
+            currentLocation: null, // 'origin' ou 'foreign'
+            currentStatus: null, // Apenas se 'foreign'
+            destinationCountry: null,
+            objective: null // Tipo de visto/serviço
+        };
 
         // Tenta detectar o idioma do navegador para usar como idioma padrão
-        let currentLanguage = 'pt'; // Fallback padrão
         const browserLanguage = navigator.language || navigator.userLanguage;
         if (browserLanguage) {
-            // Mapeia idiomas mais específicos para os que temos suporte
             if (browserLanguage.startsWith('en')) currentLanguage = 'en';
             else if (browserLanguage.startsWith('es')) currentLanguage = 'es';
             else if (browserLanguage.startsWith('fr')) currentLanguage = 'fr';
@@ -109,65 +139,328 @@
         // --- IMPORTANTE: SUBSTITUA ESTE URL PELO SEU ENDPOINT REAL DO VERCEL FUNCTIONS ---
         const GEMINI_BACKEND_URL = 'https://assistente-gemini-backend.vercel.app/api/chat'; 
 
-        // Mensagem inicial multilíngue combinada
-        const combinedInitialMessage = `
-            🇧🇷 Tire sua dúvida de viagem, imigração e migração abaixo.
-
-            🇬🇧 Ask your travel, immigration, and migration questions below.
-
-            🇪🇸 Resuelve tus dudas de viaje, inmigración y migración a continuación.
-
-            🇫🇷 Posez vos questions sur les voyages, l'immigration et la migration ci-dessous.
-
-            🇷🇺 Задайте свои вопросы о путешествиas, иммиграции и миграции ниже.
-
-            🇸🇦 اطرح أسئلتك حول السفر والهجرة والنزوح أدناه.
-
-            🇮🇳 अपनी यात्रा, आव्रजन और प्रवासन संबंधी प्रश्न नीचे पूछें।
-
-            🇨🇳 在下方提出您的旅行, 移民和移居问题。
-        `;
+        // Mensagens para cada estágio (agora mais focadas no que o frontend precisa)
+        const stagePrompts = {
+            initial_greeting: {
+                pt: 'Olá! Eu sou seu Assistente Migratório Humanitário da Evoluzion. Estou aqui para te ajudar com amizade, clareza e caminhos possíveis sobre processos migratórios.',
+                en: 'Hello! I am your Humanitarian Migration Assistant from Evoluzion. I\'m here to help you with friendship, clarity, and possible paths regarding migration processes.',
+                es: '¡Hola! Soy tu Asistente Migratorio Humanitario de Evoluzion. Estoy aquí para ayudarte con amistad, claridad y caminos posibles sobre procesos migratorios.',
+                fr: 'Bonjour! Je suis votre Assistant Migratoire Humanitaire d\'Evoluzion. Je suis là pour vous aider avec amitié, clarté et des chemins possibles concernant les processus migratoires.',
+                ru: 'Здравствуйте! Я ваш гуманитарный миграционный помощник от Evoluzion. Я здесь, чтобы помочь вам с дружелюбием, ясностью и возможными путями в отношении миграционных процессов.',
+                ar: 'مرحباً! أنا مساعدك الإنساني للهجرة من Evoluzion. أنا هنا لمساعدتك بالصداقة والوضوح والمسارات الممكنة فيما يتعلق بعمليات الهجرة.',
+                hi: 'नमस्ते! मैं एवोल्यूशन से आपका मानवीय प्रवासन सहायक हूँ। मैं यहाँ आपको प्रवासन प्रक्रियाओं के संबंध में दोस्ती, स्पष्टता और संभावित रास्तों के साथ मदद करने के लिए हूँ।',
+                zh: '您好！我是Evoluzion的人道主义移民助手。我在这里以友善、清晰的方式，为您提供移民流程的可能途径。'
+            },
+            // As perguntas para os estágios 'ask_origin', 'ask_current_location', etc.,
+            // serão geradas pelo backend agora, para garantir o idioma correto.
+            // O frontend apenas saberá qual é o PRÓXIMO estágio.
+            ask_current_location_options: [
+                { value: 'no_origin_country', text: 'Estou no meu país de origem' },
+                { value: 'foreign_country', text: 'Estou em um país estrangeiro' }
+            ],
+            ask_objective_options: [
+                { value: 'Visto de Visita', text: 'Visto de Visita' },
+                { value: 'Visto de Trabalho', text: 'Visto de Trabalho' },
+                { value: 'Residência Temporária', text: 'Residência Temporária' },
+                { value: 'Residência Permanente', text: 'Residência Permanente' },
+                { value: 'Refúgio', text: 'Refúgio' },
+                { value: 'Anistia', text: 'Anistia' },
+                { value: 'Reunião Familiar', text: 'Reunião Familiar' },
+                { value: 'Outro', text: 'Outro' }
+            ]
+        };
 
         /**
          * Adiciona uma mensagem ao histórico do chat na interface e no array chatHistory.
          * @param {string} message - O texto da mensagem.
          * @param {string} sender - O remetente da mensagem ('user', 'gemini', 'error').
+         * @param {boolean} [addToHistory=true] - Se a mensagem deve ser adicionada ao chatHistory para a IA.
          */
-        function displayMessage(message, sender) {
+        function displayMessage(message, sender, addToHistory = true) {
             const messageElement = document.createElement('div');
             messageElement.classList.add('p-3', 'rounded-lg', 'max-w-[85%]', 'break-words'); 
 
             if (sender === 'user') {
                 messageElement.classList.add('user-message');
-                messageElement.innerHTML = `<strong class="font-medium">Você:</strong> ${message}`;
-                chatHistory.push({ role: 'user', parts: [{ text: message }] }); // Adiciona ao histórico
+                messageElement.innerHTML = `<strong class="font-medium">${getLocalizedSenderName('user')}:</strong> ${message}`;
+                if (addToHistory) chatHistory.push({ role: 'user', parts: [{ text: message }] });
             } else if (sender === 'gemini') {
                 messageElement.classList.add('gemini-message');
-                messageElement.innerHTML = `<strong class="font-medium">Assistente:</strong> ${message}`;
-                chatHistory.push({ role: 'model', parts: [{ text: message }] }); // Adiciona ao histórico
+                messageElement.innerHTML = `<strong class="font-medium">${getLocalizedSenderName('gemini')}:</strong> ${message}`;
+                if (addToHistory) chatHistory.push({ role: 'model', parts: [{ text: message }] });
             } else if (sender === 'error') {
                 messageElement.classList.add('error-message');
-                messageElement.innerHTML = `<strong class="font-medium">Erro:</strong> ${message}`;
-                // Erros não são adicionados ao histórico para não confundir a IA
+                messageElement.innerHTML = `<strong class="font-medium">${getLocalizedSenderName('error')}:</strong> ${message}`;
             }
             chatMessages.appendChild(messageElement);
             chatMessages.scrollTop = chatMessages.scrollHeight; 
         }
 
         /**
-         * Envia a mensagem do usuário para o backend Gemini e exibe a resposta.
-         * @param {string} message - A mensagem a ser enviada.
+         * Retorna o nome do remetente localizado.
          */
-        async function sendChatMessage(message) {
-            const userMessage = message.trim();
-            if (!userMessage) return;
+        function getLocalizedSenderName(sender) {
+            const names = {
+                pt: { user: 'Você', gemini: 'Assistente', error: 'Erro' },
+                en: { user: 'You', gemini: 'Assistant', error: 'Error' },
+                es: { user: 'Tú', gemini: 'Asistente', error: 'Error' },
+                fr: { user: 'Vous', gemini: 'Assistant', error: 'Erreur' },
+                ru: { user: 'Вы', gemini: 'Ассистент', error: 'Ошибка' },
+                ar: { user: 'أنت', gemini: 'المساعد', error: 'خطأ' },
+                hi: { user: 'आप', gemini: 'सहायक', error: 'त्रुटि' },
+                zh: { user: '您', gemini: '助手', error: '错误' }
+            };
+            return names[currentLanguage]?.[sender] || names.pt[sender];
+        }
 
-            displayMessage(userMessage, 'user'); // Exibe a mensagem do usuário
-            chatInput.value = ''; // Limpa o input
-            chatInput.disabled = true; // Desabilita input e botão enquanto espera resposta
+        /**
+         * Renderiza botões de ação na interface.
+         * @param {Array<Object>} buttons - Array de objetos { value: string, text: string, type?: string }.
+         */
+        function renderButtons(buttons) {
+            actionButtonsContainer.innerHTML = ''; // Limpa botões anteriores
+            buttons.forEach(buttonData => {
+                const button = document.createElement('button');
+                button.classList.add('action-button');
+                if (buttonData.type === 'secondary') {
+                    button.classList.add('secondary');
+                }
+                button.textContent = buttonData.text;
+                button.dataset.value = buttonData.value;
+                actionButtonsContainer.appendChild(button);
+            });
+            chatInput.disabled = true; // Desabilita o input enquanto os botões estão ativos
             chatSendBtn.disabled = true;
-            chatLoading.classList.remove('hidden'); // Mostra "Digitando..."
-            chatError.classList.add('hidden'); // Esconde mensagens de erro anteriores
+        }
+
+        /**
+         * Limpa os botões de ação e reabilita o input.
+         */
+        function clearButtons() {
+            actionButtonsContainer.innerHTML = '';
+            chatInput.disabled = false;
+            chatSendBtn.disabled = false;
+            chatInput.focus();
+        }
+
+        /**
+         * Gerencia o fluxo da conversa baseado no estágio atual.
+         * @param {string} input - O texto ou valor do botão clicado.
+         */
+        async function handleConversationFlow(input) {
+            clearButtons(); // Limpa botões existentes antes de processar
+
+            // A primeira mensagem (multilíngue) é exibida no DOMContentLoaded
+            if (conversationStage === 'initial_greeting') {
+                // Após a saudação inicial, perguntamos o país de origem
+                await sendChatMessageToAI('', 'ask_origin'); // Envia mensagem vazia, mas com o estágio
+                conversationStage = 'ask_origin';
+            } else if (conversationStage === 'ask_origin') {
+                collectedData.originCountry = input;
+                displayMessage(input, 'user'); // Exibe a escolha do usuário
+                await sendChatMessageToAI('', 'ask_current_location');
+                conversationStage = 'ask_current_location';
+                // Renderiza botões para "Estou no meu país de origem" ou "Estou em um país estrangeiro"
+                renderButtons(stagePrompts.ask_current_location_options.map(opt => ({
+                    value: opt.value,
+                    text: getLocalizedButtonText(opt.value) // Localiza o texto do botão
+                })));
+            } else if (conversationStage === 'ask_current_location') {
+                collectedData.currentLocation = input;
+                displayMessage(input, 'user'); // Exibe a escolha do usuário
+                if (input === 'foreign_country') { 
+                    await sendChatMessageToAI('', 'ask_current_status');
+                    conversationStage = 'ask_current_status';
+                } else { // Se estiver no país de origem
+                    collectedData.currentStatus = 'no_foreign_status'; // Define um status padrão
+                    await sendChatMessageToAI('', 'ask_destination');
+                    conversationStage = 'ask_destination';
+                }
+                chatInput.focus();
+            } else if (conversationStage === 'ask_current_status') {
+                collectedData.currentStatus = input;
+                displayMessage(input, 'user'); // Exibe a escolha do usuário
+                await sendChatMessageToAI('', 'ask_destination');
+                conversationStage = 'ask_destination';
+                chatInput.focus();
+            } else if (conversationStage === 'ask_destination') {
+                collectedData.destinationCountry = input;
+                displayMessage(input, 'user'); // Exibe a escolha do usuário
+                await sendChatMessageToAI('', 'ask_objective');
+                conversationStage = 'ask_objective';
+                // Renderiza botões para tipos de serviço
+                renderButtons(stagePrompts.ask_objective_options.map(opt => ({
+                    value: opt.value,
+                    text: getLocalizedButtonText(opt.value) // Localiza o texto do botão
+                })));
+            } else if (conversationStage === 'ask_objective') {
+                collectedData.objective = input;
+                displayMessage(input, 'user'); // Exibe a escolha do usuário
+                await sendChatMessageToAI('', 'generate_roadmap'); // Envia para gerar o roteiro
+                conversationStage = 'chatting'; // Muda para o estágio de chat livre
+                
+                // Adiciona o botão "Outro Assunto" após o roteiro
+                renderButtons([
+                    { value: 'other_subject', text: getLocalizedButtonText('other_subject'), type: 'secondary' }
+                ]);
+
+            } else if (conversationStage === 'chatting') {
+                if (input === 'other_subject') {
+                    displayMessage(getLocalizedButtonText('other_subject'), 'user'); // Exibe "Outro Assunto"
+                    await sendChatMessageToAI('', 'other_subject_prompt'); // Pede o novo assunto
+                    conversationStage = 'other_subject_input';
+                    chatInput.disabled = false; // Reabilita o input
+                    chatSendBtn.disabled = false;
+                    chatInput.focus();
+                } else {
+                    await sendChatMessageToAI(input, 'chatting'); // Chat livre, envia a mensagem do usuário
+                    renderButtons([
+                        { value: 'other_subject', text: getLocalizedButtonText('other_subject'), type: 'secondary' }
+                    ]);
+                }
+            } else if (conversationStage === 'other_subject_input') {
+                displayMessage(input, 'user'); // Exibe o novo assunto digitado
+                // Reseta o contexto coletado para um novo assunto
+                collectedData = {
+                    originCountry: null,
+                    currentLocation: null,
+                    currentStatus: null,
+                    destinationCountry: null,
+                    objective: null
+                }; 
+                conversationStage = 'chatting'; // Volta para o modo de chat livre
+                await sendChatMessageToAI(input, 'chatting'); // Envia o novo assunto para a IA
+                renderButtons([
+                    { value: 'other_subject', text: getLocalizedButtonText('other_subject'), type: 'secondary' }
+                ]);
+            }
+        }
+
+        /**
+         * Retorna o texto localizado para botões e prompts.
+         */
+        function getLocalizedButtonText(key) {
+            const texts = {
+                pt: {
+                    no_origin_country: 'Estou no meu país de origem',
+                    foreign_country: 'Estou em um país estrangeiro',
+                    'Visto de Visita': 'Visto de Visita',
+                    'Visto de Trabalho': 'Visto de Trabalho',
+                    'Residência Temporária': 'Residência Temporária',
+                    'Residência Permanente': 'Residência Permanente',
+                    'Refúgio': 'Refúgio',
+                    'Anistia': 'Anistia',
+                    'Reunião Familiar': 'Reunião Familiar',
+                    'Outro': 'Outro',
+                    other_subject: 'Outro Assunto'
+                },
+                en: {
+                    no_origin_country: 'I am in my country of origin',
+                    foreign_country: 'I am in a foreign country',
+                    'Visto de Visita': 'Tourist Visa',
+                    'Visto de Trabalho': 'Work Visa',
+                    'Residência Temporária': 'Temporary Residence',
+                    'Residência Permanente': 'Permanent Residence',
+                    'Refúgio': 'Refuge',
+                    'Anistia': 'Amnesty',
+                    'Reunião Familiar': 'Family Reunification',
+                    'Outro': 'Other',
+                    other_subject: 'Other Subject'
+                },
+                es: {
+                    no_origin_country: 'Estoy en mi país de origen',
+                    foreign_country: 'Estoy en un país extranjero',
+                    'Visto de Visita': 'Visa de Visita',
+                    'Visto de Trabalho': 'Visa de Trabajo',
+                    'Residência Temporária': 'Residencia Temporal',
+                    'Residência Permanente': 'Residencia Permanente',
+                    'Refúgio': 'Refugio',
+                    'Anistia': 'Amnistía',
+                    'Reunião Familiar': 'Reunificación Familiar',
+                    'Outro': 'Otro',
+                    other_subject: 'Otro Tema'
+                },
+                fr: {
+                    no_origin_country: 'Je suis dans mon pays d\'origine',
+                    foreign_country: 'Je suis dans un pays étranger',
+                    'Visto de Visita': 'Visa de Tourisme',
+                    'Visto de Trabalho': 'Visa de Travail',
+                    'Residência Temporária': 'Résidence Temporaire',
+                    'Residência Permanente': 'Résidence Permanente',
+                    'Refúgio': 'Refuge',
+                    'Anistia': 'Amnistie',
+                    'Reunião Familiar': 'Regroupement Familial',
+                    'Outro': 'Autre',
+                    other_subject: 'Autre Sujet'
+                },
+                ru: {
+                    no_origin_country: 'Я в своей стране происхождения',
+                    foreign_country: 'Я в чужой стране',
+                    'Visto de Visita': 'Туристическая виза',
+                    'Visto de Trabalho': 'Рабочая виза',
+                    'Residência Temporária': 'Временное проживание',
+                    'Residência Permanente': 'Постоянное проживание',
+                    'Refúgio': 'Убежище',
+                    'Anistia': 'Амнистия',
+                    'Reunião Familiar': 'Воссоединение семьи',
+                    'Outro': 'Другое',
+                    other_subject: 'Другая Тема'
+                },
+                ar: {
+                    no_origin_country: 'أنا في بلدي الأصلي',
+                    foreign_country: 'أنا في بلد أجنبي',
+                    'Visto de Visita': 'تأشيرة سياحة',
+                    'Visto de Trabalho': 'تأشيرة عمل',
+                    'Residência Temporária': 'إقامة مؤقتة',
+                    'Residência Permanente': 'إقامة دائمة',
+                    'Refúgio': 'لجوء',
+                    'Anistia': 'عفو',
+                    'Reunião Familiar': 'لم شمل الأسرة',
+                    'Outro': 'آخر',
+                    other_subject: 'موضوع آخر'
+                },
+                hi: {
+                    no_origin_country: 'मैं अपने मूल देश में हूँ',
+                    foreign_country: 'मैं एक विदेशी देश में हूँ',
+                    'Visto de Visita': 'पर्यटक वीजा',
+                    'Visto de Trabalho': 'कार्य वीजा',
+                    'Residência Temporária': 'अस्थायी निवास',
+                    'Residência Permanente': 'स्थायी निवास',
+                    'Refúgio': 'शरण',
+                    'Anistia': 'माफी',
+                    'Reunião Familiar': 'परिवार का पुनर्मिलन',
+                    'Outro': 'अन्य',
+                    other_subject: 'अन्य विषय'
+                },
+                zh: {
+                    no_origin_country: '我在我的原籍国',
+                    foreign_country: '我在外国',
+                    'Visto de Visita': '旅游签证',
+                    'Visto de Trabalho': '工作签证',
+                    'Residência Temporária': '临时居留',
+                    'Residência Permanente': '永久居留',
+                    'Refúgio': '避难',
+                    'Anistia': '大赦',
+                    'Reunião Familiar': '家庭团聚',
+                    'Outro': '其他',
+                    other_subject: '其他主题'
+                }
+            };
+            return texts[currentLanguage]?.[key] || texts.pt[key];
+        }
+
+
+        /**
+         * Envia a mensagem (e o histórico + contexto) para o backend Gemini.
+         * Esta função é chamada por handleConversationFlow quando é a hora de falar com a IA.
+         * @param {string} message - A mensagem a ser enviada para a IA.
+         * @param {string} requestedStage - O estágio que o backend deve responder (para gerar a pergunta correta).
+         */
+        async function sendChatMessageToAI(message, requestedStage) {
+            chatInput.disabled = true;
+            chatSendBtn.disabled = true;
+            chatLoading.classList.remove('hidden');
+            chatError.classList.add('hidden');
 
             try {
                 const response = await fetch(GEMINI_BACKEND_URL, {
@@ -176,9 +469,17 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        message: userMessage,
-                        language: currentLanguage, // Envia o idioma detectado/padrão
-                        chatHistory: chatHistory // Envia o histórico completo da conversa
+                        message: message, // Mensagem do usuário ou vazia para prompts do assistente
+                        language: currentLanguage, // Idioma detectado do navegador
+                        chatHistory: chatHistory, // Histórico completo
+                        // Envia o contexto coletado para o backend
+                        originCountry: collectedData.originCountry,
+                        currentLocation: collectedData.currentLocation,
+                        currentStatus: collectedData.currentStatus,
+                        destinationCountry: collectedData.destinationCountry,
+                        objective: collectedData.objective,
+                        // Indica ao backend o estágio atual para que ele saiba o que responder
+                        requestedStage: requestedStage 
                     })
                 });
 
@@ -203,18 +504,39 @@
             }
         }
 
-        // Event Listeners para o envio de mensagens pelo input
-        chatSendBtn.addEventListener('click', () => sendChatMessage(chatInput.value));
-        chatInput.addEventListener('keypress', (event) => {
-            if (event.key === 'Enter') {
-                sendChatMessage(chatInput.value);
+        // Event Listener para cliques nos botões de ação (como "Outro Assunto" ou opções de localização/serviço)
+        actionButtonsContainer.addEventListener('click', (event) => {
+            if (event.target.classList.contains('action-button')) {
+                const value = event.target.dataset.value;
+                handleConversationFlow(value);
             }
         });
 
-        // Inicializa a página mostrando o chat diretamente e a mensagem inicial
+        // Event Listeners para o envio de mensagens pelo input
+        chatSendBtn.addEventListener('click', () => handleConversationFlow(chatInput.value));
+        chatInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                handleConversationFlow(chatInput.value);
+            }
+        });
+
+        // Inicializa a página
         document.addEventListener('DOMContentLoaded', () => {
-            displayMessage(combinedInitialMessage, 'gemini'); // Exibe a mensagem inicial no chat
-            chatInput.focus(); // Coloca o foco no campo de input
+            // Mensagem inicial multilíngue combinada
+            const combinedInitialMessage = `
+                <p class="text-lg font-semibold"><span class="flag-icon">🇧🇷</span> Tire sua dúvida de viagem, imigração e migração abaixo.</p>
+                <p class="text-base"><span class="flag-icon">🇬🇧</span> Ask your travel, immigration, and migration questions below.</p>
+                <p class="text-base"><span class="flag-icon">🇪🇸</span> Resuelve tus dudas de viaje, inmigración y migración a continuación.</p>
+                <p class="text-base"><span class="flag-icon">🇫🇷</span> Posez vos questions sur les voyages, l'immigration et la migration ci-dessous.</p>
+                <p class="text-base"><span class="flag-icon">🇷🇺</span> Задайте свои вопросы о путешествиях, иммиграции и миграции ниже.</p>
+                <p class="text-base"><span class="flag-icon">🇸🇦</span> اطرح أسئلتك حول السفر والهجرة والنزوح أدناه.</p>
+                <p class="text-base"><span class="flag-icon">🇮🇳</span> अपनी यात्रा, आव्रजन और प्रवासन संबंधी प्रश्न नीचे पूछें।</p>
+                <p class="text-base"><span class="flag-icon">🇨🇳</span> 在下方提出您的旅行、移民和移居问题。</p>
+            `;
+            displayMessage(combinedInitialMessage, 'gemini', false); // Não adiciona ao histórico da IA, é apenas uma saudação inicial
+
+            // Inicia o fluxo da conversa
+            handleConversationFlow(''); // Chama com input vazio para iniciar o estágio 'initial_greeting'
         });
     </script>
 </body>
