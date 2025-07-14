@@ -4,134 +4,126 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Diagnóstico do Imigrante – Advocacia.Site</title>
+  <title>Assistente Migratório – Advocacia.Site</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+  <style>
+    .flag {
+      width: 24px;
+      height: 16px;
+      object-fit: cover;
+      display: inline-block;
+      margin-right: 0.5rem;
+    }
+  </style>
 </head>
-<body class="bg-white text-gray-900 font-sans">
+<body class="bg-gray-50 text-gray-900 font-sans">
 
-  <nav class="bg-gray-900 text-white px-6 py-4 shadow-md">
-    <div class="max-w-6xl mx-auto flex items-center justify-between">
-      <a href="index.html" class="text-xl font-bold text-yellow-400">Advocacia.Site</a>
-      <a href="ferramentas_justica.html" class="text-sm hover:underline">← Voltar às Ferramentas</a>
-    </div>
-  </nav>
-
-  <header class="text-center py-12 px-4 bg-gradient-to-br from-yellow-100 to-yellow-50" data-aos="fade-down">
-    <h1 class="text-4xl font-bold mb-4 text-gray-800">Diagnóstico do Imigrante</h1>
-    <p class="text-lg text-gray-600 max-w-2xl mx-auto">Descubra qual caminho legal você pode seguir no Brasil com base na sua origem, documentos e objetivo migratório.</p>
+  <header class="text-center py-10 bg-gradient-to-br from-yellow-100 to-yellow-50 shadow">
+    <h1 class="text-3xl font-bold">🌍 Assistente Migratório</h1>
+    <p class="text-gray-600 mt-2">Simule sua jornada legal de imigração em poucos passos</p>
   </header>
 
-  <section class="max-w-2xl mx-auto px-4 py-12 space-y-6" data-aos="fade-up">
-    <form id="diagnosticoForm" class="space-y-6 bg-white p-6 rounded-lg shadow-md">
-      <div>
-        <label class="block text-sm font-medium mb-1">Nome completo</label>
-        <input type="text" name="nome" required class="w-full border-gray-300 rounded p-2" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium mb-1">Nacionalidade de origem</label>
-        <select name="nacionalidade" required class="w-full border-gray-300 rounded p-2">
-          <option value="">Selecione</option>
-          <optgroup label="BRICS e Aliados">
-            <option>Brasil</option>
-            <option>China</option>
-            <option>Índia</option>
-            <option>Rússia</option>
-            <option>África do Sul</option>
-            <option>Emirados Árabes Unidos</option>
-            <option>Egito</option>
-            <option>Arábia Saudita</option>
-            <option>Irã</option>
-            <option>Etiópia</option>
-            <option>Argentina</option>
-            <option>Marrocos</option>
-          </optgroup>
-          <optgroup label="América do Norte / Europa">
-            <option>Estados Unidos</option>
-            <option>Canadá</option>
-            <option>Alemanha</option>
-            <option>França</option>
-            <option>Portugal</option>
-            <option>Espanha</option>
-            <option>Itália</option>
-          </optgroup>
-          <option>Outro país</option>
-        </select>
-      </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-medium mb-1">Data de nascimento</label>
-          <input type="date" name="nascimento" required class="w-full border-gray-300 rounded p-2" />
-        </div>
-        <div>
-          <label class="block text-sm font-medium mb-1">Data de chegada ao Brasil</label>
-          <input type="date" name="chegada" required class="w-full border-gray-300 rounded p-2" />
-        </div>
-      </div>
-      <div>
-        <label class="block text-sm font-medium mb-1">O que você deseja no Brasil?</label>
-        <select name="objetivo" required class="w-full border-gray-300 rounded p-2">
-          <option value="">Selecione</option>
-          <option>Residência Temporária</option>
-          <option>Residência Permanente</option>
-          <option>Solicitação de Refúgio</option>
-          <option>Asilo Político</option>
-          <option>Naturalização</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-sm font-medium mb-2">Quais documentos você possui?</label>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-700">
-          <label><input type="checkbox" name="docs" value="Passaporte" /> Passaporte</label>
-          <label><input type="checkbox" name="docs" value="CPF" /> CPF</label>
-          <label><input type="checkbox" name="docs" value="Visto" /> Visto de entrada</label>
-          <label><input type="checkbox" name="docs" value="Protocolo Refúgio" /> Protocolo de refúgio</label>
-          <label><input type="checkbox" name="docs" value="Comprovante de residência" /> Comprovante de residência</label>
-          <label><input type="checkbox" name="docs" value="Identidade do país de origem" /> Identidade do país de origem</label>
-          <label><input type="checkbox" name="docs" value="CTPS" /> Carteira de trabalho</label>
-        </div>
-      </div>
-      <div class="text-center">
-        <button type="submit" class="bg-yellow-600 hover:bg-yellow-500 text-white font-semibold px-6 py-3 rounded-full mt-4">
-          Ver Diagnóstico
-        </button>
-      </div>
-    </form>
+  <main class="max-w-2xl mx-auto p-6 space-y-8">
 
-    <div id="resultado" class="hidden p-6 bg-green-100 rounded shadow text-gray-800">
-      <h3 class="text-xl font-bold mb-2">Resultado Inicial</h3>
-      <p id="resumoTexto">Analisando suas respostas...</p>
-    </div>
-  </section>
+    <!-- Passo 1: País de origem -->
+    <section>
+      <h2 class="text-xl font-semibold mb-4">1️⃣ Qual seu país de origem?</h2>
+      <select id="paisOrigem" class="w-full p-3 rounded border border-gray-300">
+        <option value="">Selecione seu país</option>
+        <option value="Marrocos">🇲🇦 Maroc (Marrocos)</option>
+        <option value="China">🇨🇳 中国 (China)</option>
+        <option value="Brasil">🇧🇷 Brasil</option>
+        <option value="Índia">🇮🇳 भारत (Índia)</option>
+        <option value="Rússia">🇷🇺 Россия (Rússia)</option>
+        <option value="África do Sul">🇿🇦 South Africa</option>
+        <option value="Egito">🇪🇬 مصر (Egito)</option>
+        <option value="Emirados Árabes Unidos">🇦🇪 الإمارات (UAE)</option>
+        <option value="Argentina">🇦🇷 Argentina</option>
+        <option value="Estados Unidos">🇺🇸 United States</option>
+        <option value="Canadá">🇨🇦 Canada</option>
+        <option value="França">🇫🇷 France</option>
+        <option value="Portugal">🇵🇹 Portugal</option>
+        <option value="Outro">🌐 Outro país</option>
+      </select>
+    </section>
 
-  <footer class="text-center text-sm text-gray-500 py-10">
+    <!-- Passo 2: País de destino -->
+    <section>
+      <h2 class="text-xl font-semibold mb-4">2️⃣ Para qual país você deseja ir ou está atualmente?</h2>
+      <select id="paisDestino" class="w-full p-3 rounded border border-gray-300">
+        <option value="">Selecione o país de destino</option>
+        <option value="Brasil">🇧🇷 Brasil</option>
+        <option value="Canadá">🇨🇦 Canadá</option>
+        <option value="Estados Unidos">🇺🇸 Estados Unidos</option>
+        <option value="França">🇫🇷 França</option>
+        <option value="Alemanha">🇩🇪 Deutschland</option>
+        <option value="Portugal">🇵🇹 Portugal</option>
+        <option value="Outro">🌐 Outro país</option>
+      </select>
+    </section>
+
+    <!-- Passo 3: Tipo de serviço -->
+    <section>
+      <h2 class="text-xl font-semibold mb-4">3️⃣ O que você está buscando?</h2>
+      <div class="grid grid-cols-2 gap-4 text-center">
+        <button class="bg-white border p-4 rounded shadow hover:bg-yellow-100" onclick="selecionarOpcao('Visto de visita')">Visto de Visita</button>
+        <button class="bg-white border p-4 rounded shadow hover:bg-yellow-100" onclick="selecionarOpcao('Visto de trabalho')">Visto de Trabalho</button>
+        <button class="bg-white border p-4 rounded shadow hover:bg-yellow-100" onclick="selecionarOpcao('Residência temporária')">Residência Temporária</button>
+        <button class="bg-white border p-4 rounded shadow hover:bg-yellow-100" onclick="selecionarOpcao('Residência permanente')">Residência Permanente</button>
+        <button class="bg-white border p-4 rounded shadow hover:bg-yellow-100" onclick="selecionarOpcao('Refúgio')">Refúgio</button>
+        <button class="bg-white border p-4 rounded shadow hover:bg-yellow-100" onclick="selecionarOpcao('Anistia')">Anistia</button>
+      </div>
+    </section>
+
+    <!-- Resultado -->
+    <section id="resultado" class="hidden bg-green-100 border-l-4 border-green-500 p-6 rounded">
+      <h3 class="text-lg font-bold mb-2">📋 Requisitos & Procedimentos</h3>
+      <p id="textoResultado">...</p>
+      <div class="mt-4">
+        <a href="https://wa.me/5544984342756" target="_blank" class="inline-block bg-green-600 text-white px-6 py-3 rounded-full font-semibold shadow hover:bg-green-500">
+          Falar com um especialista no WhatsApp
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="text-center text-sm text-gray-500 mt-16 py-8">
     © 2025 Advocacia.Site – Uma iniciativa da Evoluzion
   </footer>
 
   <script>
-    document.getElementById("diagnosticoForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const nome = this.nome.value;
-      const nacionalidade = this.nacionalidade.value;
-      const objetivo = this.objetivo.value;
+    let tipoServico = "";
 
-      let resultado = `Olá, ${nome || 'imigrante'}! Você é originário(a) de ${nacionalidade} e deseja "${objetivo}" no Brasil.`;
+    function selecionarOpcao(tipo) {
+      tipoServico = tipo;
+      const origem = document.getElementById("paisOrigem").value;
+      const destino = document.getElementById("paisDestino").value;
 
-      if (['China', 'Índia', 'Rússia', 'África do Sul', 'Emirados Árabes Unidos', 'Egito', 'Arábia Saudita', 'Irã', 'Etiópia', 'Argentina', 'Marrocos'].includes(nacionalidade)) {
-        resultado += " Você pode ter acesso facilitado por acordos internacionais com o Brasil.";
-      } else if (['Estados Unidos', 'Canadá', 'Alemanha', 'França', 'Portugal', 'Espanha', 'Itália'].includes(nacionalidade)) {
-        resultado += " Seu processo seguirá os trâmites regulares, com possível apoio consular.";
-      } else {
-        resultado += " Consulte um especialista para verificar caminhos específicos.";
+      if (!origem || !destino) {
+        alert("Por favor, selecione o país de origem e de destino antes de continuar.");
+        return;
       }
 
-      document.getElementById("resumoTexto").innerText = resultado;
+      let resultado = `Você está saindo de ${origem} e deseja obter "${tipo}" para ${destino}.\n`;
+
+      resultado += "📌 Documentos comuns exigidos:\n";
+      resultado += "• Passaporte válido\n• Foto 3x4\n• Comprovante de residência\n• Motivo da solicitação\n";
+
+      if (tipo === "Residência permanente") {
+        resultado += "• Certidão de antecedentes criminais\n• Prova de vínculo ou tempo de permanência\n";
+      }
+      if (tipo === "Refúgio") {
+        resultado += "• Declaração de perseguição ou risco\n• Protocolo de solicitação emitido pela Polícia Federal\n";
+      }
+
+      resultado += "\n💰 Taxas e onde solicitar:\n• Solicite no consulado ou na Polícia Federal brasileira.\n• Custos entre R$150 a R$500, dependendo do serviço.\n";
+
+      resultado += "\n🚀 Com apoio especializado, você pode agilizar todo o processo com mais segurança e assertividade.";
+
+      document.getElementById("textoResultado").innerText = resultado;
       document.getElementById("resultado").classList.remove("hidden");
       document.getElementById("resultado").scrollIntoView({ behavior: "smooth" });
-    });
+    }
   </script>
-  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
-  <script>AOS.init({ duration: 1000, once: true });</script>
-
 </body>
 </html>
