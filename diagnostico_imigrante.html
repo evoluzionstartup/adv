@@ -1,142 +1,410 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Assistente Migratório Humanitário – Evoluzion</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    .flag { width: 24px; height: 16px; margin-right: 8px; vertical-align: middle; }
-    button.selected { background-color: #fde047; }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Assistente Migratório Humanitário – Evoluzion</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .flag { width: 24px; height: 16px; margin-right: 8px; vertical-align: middle; }
+        button {
+            padding: 12px 18px;
+            background-color: #e5e7eb; /* Cor padrão dos botões */
+            border-radius: 8px;
+            font-weight: 500;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        button:hover {
+            background-color: #d1d5db;
+        }
+        button.selected {
+            background-color: #fde047; /* Amarelo */
+            color: #1f2937; /* Texto escuro para contraste */
+            font-weight: bold;
+        }
+        #resultado {
+            white-space: pre-wrap; /* Permite quebras de linha e espaços no texto */
+        }
+    </style>
 </head>
 <body class="bg-gray-100 text-gray-900">
 
-  <header class="bg-gray-800 text-white py-6 text-center shadow-md">
-    <h1 class="text-3xl font-bold">🌍 Assistente Migratório Humanitário</h1>
-    <p class="mt-2 text-sm">Vamos te ajudar com AMIZADE, clareza e caminhos possíveis!</p>
-  </header>
+    <header class="bg-gray-800 text-white py-6 text-center shadow-md">
+        <h1 class="text-3xl font-bold">🌍 Assistente Migratório Humanitário</h1>
+        <p class="mt-2 text-sm">Vamos te ajudar com AMIZADE, clareza e caminhos possíveis!</p>
+    </header>
 
-  <main class="max-w-4xl mx-auto px-4 py-8 space-y-10">
+    <main class="max-w-4xl mx-auto px-4 py-8 space-y-10">
 
-    <!-- 1: Origem -->
-    <section>
-      <h2 class="text-xl font-semibold mb-4">1️⃣ Seu país de origem?</h2>
-      <select id="paisOrigem" class="w-full p-3 border rounded">
-        <option value="">– Escolha –</option>
-        <option value="Brasil">🇧🇷 Brasil</option>
-        <option value="China">🇨🇳 China</option>
-        <option value="India">🇮🇳 Índia</option>
-        <option value="Russia">🇷🇺 Rússia</option>
-        <option value="AfricaDoSul">🇿🇦 África do Sul</option>
-        <option value="Marrocos">🇲🇦 Marrocos</option>
-      </select>
-    </section>
+        <section>
+            <h2 class="text-xl font-semibold mb-4">1️⃣ Seu país de origem?</h2>
+            <select id="paisOrigem" class="w-full p-3 border rounded">
+                <option value="">– Escolha –</option>
+                <option value="Brasil">🇧🇷 Brasil</option>
+                <option value="China">🇨🇳 China</option>
+                <option value="India">🇮🇳 Índia</option>
+                <option value="Russia">🇷🇺 Rússia</option>
+                <option value="AfricaDoSul">🇿🇦 África do Sul</option>
+                <option value="Marrocos">🇲🇦 Marrocos</option>
+            </select>
+        </section>
 
-    <!-- 2: Destino -->
-    <section>
-      <h2 class="text-xl font-semibold mb-4">2️⃣ Para qual país vai ou já está?</h2>
-      <select id="paisDestino" class="w-full p-3 border rounded">
-        <option value="">– Escolha –</option>
-        <option value="Brasil">🇧🇷 Brasil</option>
-        <option value="Schengen">🇪🇺 União Europeia (Schengen)</option>
-        <option value="Russia">🇷🇺 Rússia</option>
-        <option value="Marrocos">🇲🇦 Marrocos</option>
-        <option value="EUA">🇺🇸 Estados Unidos</option>
-        <option value="Canada">🇨🇦 Canadá</option>
-      </select>
-    </section>
+        <section>
+            <h2 class="text-xl font-semibold mb-4">2️⃣ Para qual país vai ou já está?</h2>
+            <select id="paisDestino" class="w-full p-3 border rounded">
+                <option value="">– Escolha –</option>
+                <option value="Brasil">🇧🇷 Brasil</option>
+                <option value="Schengen">🇪🇺 União Europeia (Schengen)</option>
+                <option value="Russia">🇷🇺 Rússia</option>
+                <option value="Marrocos">🇲🇦 Marrocos</option>
+                <option value="EUA">🇺🇸 Estados Unidos</option>
+                <option value="Canada">🇨🇦 Canadá</option>
+            </select>
+        </section>
 
-    <!-- 3: Tipo de serviço -->
-    <section>
-      <h2 class="text-xl font-semibold mb-4">3️⃣ O que busca?</h2>
-      <div id="opcoes" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-        <button onclick="selecionarTipo(this,'Visita')">Visto de Visita</button>
-        <button onclick="selecionarTipo(this,'Trabalho')">Visto de Trabalho</button>
-        <button onclick="selecionarTipo(this,'Temp')">Residência Temporária</button>
-        <button onclick="selecionarTipo(this,'Perm')">Residência Permanente</button>
-        <button onclick="selecionarTipo(this,'Refugio')">Refúgio</button>
-        <button onclick="selecionarTipo(this,'Anistia')">Anistia</button>
-      </div>
-    </section>
+        <section>
+            <h2 class="text-xl font-semibold mb-4">3️⃣ O que busca?</h2>
+            <div id="opcoes" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                <button data-type="Visita">Visto de Visita</button>
+                <button data-type="Trabalho">Visto de Trabalho</button>
+                <button data-type="Temp">Residência Temporária</button>
+                <button data-type="Perm">Residência Permanente</button>
+                <button data-type="Refugio">Refúgio</button>
+                <button data-type="Anistia">Anistia</button>
+            </div>
+        </section>
 
-    <!-- 4: Resultado -->
-    <section id="resultado" class="hidden bg-green-50 p-6 rounded shadow">
-      <h2 class="text-lg font-semibold mb-4">📋 Resultado para você</h2>
-      <p id="textoResultado" class="whitespace-pre-line text-sm"></p>
-      <div class="mt-6 text-center">
-        <a href="https://wa.me/5544984342756" target="_blank"
-           class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full font-semibold transition">
-          Converse com especialista
-        </a>
-      </div>
-    </section>
+        <section id="resultadoContainer" class="hidden bg-yellow-50 p-6 rounded shadow-lg border-l-4 border-yellow-500">
+            <h2 class="text-2xl font-bold text-yellow-800 mb-4">📋 Seu Roteiro Migratório Humanitário</h2>
+            <p id="textoResultado" class="text-gray-800 text-base leading-relaxed"></p>
+            <div class="mt-8 text-center">
+                <a href="https://wa.me/5544984342756" target="_blank"
+                   class="inline-flex items-center bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-full font-semibold transition shadow-lg transform hover:scale-105">
+                    <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg>
+                    Fale com nosso especialista!
+                </a>
+            </div>
+        </section>
 
-  </main>
+    </main>
 
-  <footer class="bg-gray-900 text-white text-center text-sm py-4">
-    Assistente humanitário – Evol.U.Zion 🌎
-  </footer>
+    <footer class="bg-gray-900 text-white text-center text-sm py-4 mt-10">
+        Assistente humanitário – Evol.U.Zion 🌎
+    </footer>
 
-  <script>
-    let tipoEscolhido = '';
-    const dados = {
-      Brasil:     { passaporte: { valor:'R$ 257,25', link:'https://www.gov.br/pt-br/servicos/obter-passaporte-comum-para-brasileiro' } },
-      China:      { passaporte: { valor:'CNY 120 (~US$18)', link:'http://' } },
-      India:      { passaporte: { valor:'₹ 1 500 (36p) /₹ 3 500 urgência', link:'http://' } },
-      Russia:     { passaporte: { valor:'RUB 2000 (~US$25)', link:'https://www.kdmid.ru/' } },
-      AfricaDoSul:{ passaporte: { valor:'US$ 67 (comum)', link:'http://' } },
-      Marrocos:   {passaporte:'— visto não exigido até 90 dias'},
-    };
-    const vistos = {
-      Marrocos: { Visita:'Dispensado p/ até 90 dias – presencial', link:'https://www.diplomatie.ma/' },
-      Schengen: { Visita:'€ 90 adultos / € 45 crianças – consulado', link:'https://brasil.diplo.de/br-pt/servicos/vistos/schengen/schengen-2610370' },
-      EUA:      { Visita:'US$ 185 (B1/B2)', link:'https://ceac.state.gov/' },
-      Canada:   { Visita:'CAD 100 por pessoa – online', link:'https://www.canada.ca/en/immigration-refugees-citizenship/services/visit-canada.html' },
-      Russia:   { Visita:'RUB 2700 (~US$30) – consulado', link:'https://visa.kdmid.ru/' },
-    };
+    <script>
+        let tipoEscolhido = ''; // Variável para armazenar o tipo de serviço selecionado
+        const paisOrigemSelect = document.getElementById('paisOrigem');
+        const paisDestinoSelect = document.getElementById('paisDestino');
+        const opcoesDiv = document.getElementById('opcoes');
+        const resultadoContainer = document.getElementById('resultadoContainer');
+        const textoResultado = document.getElementById('textoResultado');
 
-    function selecionarTipo(btn, tipo){
-      if(tipoEscolhido) return;
-      tipoEscolhido = tipo;
-      btn.classList.add('selected');
-      montarResultado();
-    }
+        // --- Base de Conhecimento (Dados do MVP) ---
+        // ESTES SÃO EXEMPLOS! PRECISE SER COMPLETA E VALIDADA.
+        const dadosPaises = {
+            Brasil: {
+                moeda: 'Real (R$)',
+                passaporte: {
+                    valor: 'R$ 257,25',
+                    link: 'https://www.gov.br/pt-br/servicos/obter-passaporte-comum-para-brasileiro',
+                    requisitos: 'Documento de identidade, CPF, título de eleitor, comprovante de quitação militar (homens).'
+                },
+                servicosComuns: {
+                    traducaoJuramentada: 'R$ 150 - R$ 300 por página (aprox.)',
+                    apostilamento: 'R$ 50 - R$ 150 por documento (aprox.)'
+                }
+            },
+            China: {
+                moeda: 'Yuan (CNY)',
+                passaporte: {
+                    valor: 'CNY 120 (~US$18)',
+                    link: 'http://', // SUBSTITUIR POR LINK OFICIAL
+                    requisitos: 'Identidade chinesa, fotos.'
+                },
+                servicosComuns: {
+                    traducaoJuramentada: 'CNY 200 - 500 por página',
+                    apostilamento: 'CNY 100 - 300 por documento'
+                }
+            },
+            India: {
+                moeda: 'Rúpia Indiana (₹)',
+                passaporte: {
+                    valor: '₹ 1 500 (normal) / ₹ 3 500 (urgência)',
+                    link: 'http://', // SUBSTITUIR POR LINK OFICIAL
+                    requisitos: 'Comprovante de endereço, prova de cidadania.'
+                },
+                servicosComuns: {
+                    traducaoJuramentada: '₹ 1000 - 2500 por página',
+                    apostilamento: '₹ 500 - 1500 por documento'
+                }
+            },
+            Russia: {
+                moeda: 'Rublo (RUB)',
+                passaporte: {
+                    valor: 'RUB 2000 (~US$25)',
+                    link: 'https://www.kdmid.ru/',
+                    requisitos: 'Documentos de identificação, fotos.'
+                },
+                servicosComuns: {
+                    traducaoJuramentada: 'RUB 1500 - 4000 por página',
+                    apostilamento: 'RUB 800 - 2500 por documento'
+                }
+            },
+            AfricaDoSul: {
+                moeda: 'Rand (ZAR)',
+                passaporte: {
+                    valor: 'US$ 67 (comum)', // Valor em USD para facilitar comparação
+                    link: 'http://', // SUBSTITUIR POR LINK OFICIAL
+                    requisitos: 'Identidade nacional, comprovante de residência.'
+                },
+                servicosComuns: {
+                    traducaoJuramentada: 'ZAR 300 - 700 por página',
+                    apostilamento: 'ZAR 150 - 400 por documento'
+                }
+            },
+            Marrocos: {
+                moeda: 'Dirham Marroquino (MAD)',
+                passaporte: {
+                    valor: 'MAD 300 (~US$30)',
+                    link: 'http://', // SUBSTITUIR POR LINK OFICIAL
+                    requisitos: 'Cartão de identificação nacional, fotos.'
+                },
+                servicosComuns: {
+                    traducaoJuramentada: 'MAD 200 - 500 por página',
+                    apostilamento: 'MAD 100 - 250 por documento'
+                }
+            },
+            Schengen: { // União Europeia (Schengen) - dados gerais
+                moeda: 'Euro (€)',
+                passaporte: { valor: 'Consultar consulado do país de destino na UE' },
+                servicosComuns: {
+                    traducaoJuramentada: '€ 30 - € 80 por página (varia por país/idioma)',
+                    apostilamento: '€ 20 - € 50 por documento (varia por país)'
+                }
+            },
+            EUA: {
+                moeda: 'Dólar (US$)',
+                passaporte: { valor: 'Consultar consulado do país de destino' },
+                servicosComuns: {
+                    traducaoJuramentada: 'US$ 20 - US$ 50 por página',
+                    apostilamento: 'US$ 10 - US$ 20 por documento'
+                }
+            },
+            Canada: {
+                moeda: 'Dólar Canadense (CAD)',
+                passaporte: { valor: 'Consultar consulado do país de destino' },
+                servicosComuns: {
+                    traducaoJuramentada: 'CAD 25 - CAD 75 por página',
+                    apostilamento: 'CAD 10 - CAD 30 por documento'
+                }
+            }
+        };
 
-    function montarResultado(){
-      const o = document.getElementById('paisOrigem').value;
-      const d = document.getElementById('paisDestino').value;
-      if(!o||!d||!tipoEscolhido)return;
+        const dadosVistos = {
+            Marrocos: {
+                Visita: {
+                    info: 'Visto dispensado para a maioria das nacionalidades para estadias de até 90 dias. É necessário passaporte válido por no mínimo 6 meses.',
+                    orgao: 'Entrada pelo controle de fronteiras marroquino',
+                    custoTaxa: 'N/A',
+                    documentos: 'Passaporte, passagem de retorno, comprovação de meios financeiros.',
+                    link: 'https://www.diplomatie.ma/'
+                },
+                Trabalho: { // Exemplo mais detalhado
+                    info: 'Exige oferta de trabalho de empregador marroquino e autorização de trabalho emitida pelas autoridades marroquinas. Processo complexo.',
+                    orgao: 'Ministério do Emprego e Assuntos Sociais de Marrocos; Consulado/Embaixada de Marrocos em seu país de origem.',
+                    custoTaxa: 'MAD 500 - MAD 1000 (taxas governamentais, pode variar)',
+                    documentos: 'Contrato de trabalho, diploma(s), certidões, antecedentes criminais, passaporte.',
+                    link: 'https://www.diplomatie.ma/'
+                }
+            },
+            Schengen: {
+                Visita: {
+                    info: 'Visto Schengen para turismo. Permite estadia de até 90 dias em um período de 180 dias. Solicitar no consulado do país de entrada ou de maior permanência.',
+                    orgao: 'Consulado/Embaixada do país membro Schengen de destino em seu país de origem.',
+                    custoTaxa: '€ 90 (adultos) / € 45 (crianças 6-12 anos)',
+                    documentos: 'Passaporte válido, formulário de visto, foto, seguro viagem (mín. € 30.000 cobertura), comprovação de meios financeiros, reserva de hotel/carta convite, passagem aérea.',
+                    link: 'https://brasil.diplo.de/br-pt/servicos/vistos/schengen/schengen-2610370'
+                },
+                Trabalho: {
+                    info: 'Cada país da União Europeia tem regras específicas para vistos de trabalho. Geralmente exige oferta de emprego e autorização.',
+                    orgao: 'Consulado/Embaixada do país específico da UE.',
+                    custoTaxa: 'Varia por país (€ 70 - € 150 ou mais)',
+                    documentos: 'Contrato de trabalho, qualificações, antecedentes criminais, seguro saúde.',
+                    link: 'https://ec.europa.eu/home-affairs/policies/migration-and-asylum/legal-migration-and-integration/work-visas_en'
+                }
+            },
+            EUA: {
+                Visita: {
+                    info: 'Visto de Não-Imigrante B1/B2 (Negócios/Turismo). Necessário entrevista consular.',
+                    orgao: 'Embaixada/Consulados dos EUA em seu país de origem.',
+                    custoTaxa: 'US$ 185 (taxa MRV)',
+                    documentos: 'Passaporte válido (mín. 6 meses após a data pretendida de estadia), formulário DS-160, comprovante de meios financeiros, vínculos com país de origem.',
+                    link: 'https://ceac.state.gov/genniv/'
+                },
+                Trabalho: {
+                    info: 'Diversos tipos de visto de trabalho (H1B, L1, O1 etc.), cada um com requisitos específicos e complexos, geralmente exigindo petição aprovada pelo empregador nos EUA.',
+                    orgao: 'USCIS (Serviços de Cidadania e Imigração dos EUA) e Embaixada/Consulados dos EUA.',
+                    custoTaxa: 'US$ 185 (taxa MRV do visto) + taxas de petição (US$ 460 - US$ 4.000+ dependendo do visto)',
+                    documentos: 'Petição aprovada, qualificação profissional, antecedentes criminais.',
+                    link: 'https://www.uscis.gov/working-in-the-united-states'
+                }
+            },
+            Canada: {
+                Visita: {
+                    info: 'Visto de Visitante (Temporary Resident Visa - TRV) ou eTA (Autorização Eletrônica de Viagem) para cidadãos elegíveis. Pedido online.',
+                    orgao: 'Immigration, Refugees and Citizenship Canada (IRCC) - online.',
+                    custoTaxa: 'CAD 100 por pessoa (TRV) / CAD 7 (eTA)',
+                    documentos: 'Passaporte válido, formulário online, comprovante de meios financeiros, passagem de retorno, carta convite (se aplicável).',
+                    link: 'https://www.canada.ca/en/immigration-refugees-citizenship/services/visit-canada.html'
+                },
+                Refugio: {
+                    info: 'Processo de solicitação de Refúgio. Exige que a pessoa tenha uma base para o pedido de proteção.',
+                    orgao: 'Immigration, Refugees and Citizenship Canada (IRCC) e Conselho de Imigração e Refúgio do Canadá (IRB).',
+                    custoTaxa: 'Geralmente não há taxa para o pedido de refúgio em si, mas pode haver custos com documentos e serviços jurídicos.',
+                    documentos: 'Formulário de solicitação, documentos de identificação, provas que justifiquem o medo de perseguição no país de origem.',
+                    link: 'https://www.canada.ca/en/immigration-refugees-citizenship/services/refugees/claim-canada.html'
+                }
+            },
+            // Adicione mais dados para "Residência Temporária", "Residência Permanente", "Anistia", etc., para cada país
+            // Exemplo para Brasil (entrada como Refúgio)
+            Brasil: {
+                Refugio: {
+                    info: 'Processo de solicitação de refúgio no Brasil. Conforme a Lei nº 9.474/1997.',
+                    orgao: 'Polícia Federal (PF) - Unidade de Protocolo; Comitê Nacional para os Refugiados (CONARE) – Ministério da Justiça.',
+                    custoTaxa: 'Não há taxa para o pedido de refúgio.',
+                    documentos: 'Documento de identificação (se possuir), formulário de solicitação preenchido, relatos e provas dos motivos do pedido de refúgio.',
+                    link: 'https://www.gov.br/mj/pt-br/assuntos/seus-direitos/refugio'
+                },
+                Perm: {
+                    info: 'Residência Permanente no Brasil (por reunião familiar, investimento, aposentadoria etc.).',
+                    orgao: 'Polícia Federal (PF); Ministério da Justiça e Segurança Pública.',
+                    custoTaxa: 'Taxas para emissão de Carteira de Registro Nacional Migratório (CRNM) e taxa de processamento de pedido.',
+                    documentos: 'Passaporte, certidões, antecedentes criminais, comprovantes de meios de subsistência, formulários específicos.',
+                    link: 'https://www.gov.br/pt-br/servicos/obter-autorizacao-de-residencia-para-imigrantes'
+                }
+            }
+        };
 
-      let msg = `Origem: ${o}\nDestino: ${d}\nServiço: ${tipoEscolhido}\n\n`;
+        // --- Funções de Lógica ---
 
-      // origem
-      const po = dados[o];
-      msg += `📋 Passaporte (${o}): ${po.passaporte.valor}\nLink: ${po.passaporte.link}\n\n`;
+        // Função para selecionar o tipo de serviço e atualizar a interface
+        function selecionarTipo(event) {
+            const clickedButton = event.target;
+            // Remover 'selected' de todos os botões
+            document.querySelectorAll('#opcoes button').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            // Adicionar 'selected' ao botão clicado
+            clickedButton.classList.add('selected');
+            tipoEscolhido = clickedButton.dataset.type; // Pega o valor do atributo data-type
+            montarResultado(); // Chama a função para montar o resultado
+        }
 
-      // visto
-      if(vistos[d] && vistos[d][tipoEscolhido]){
-        const v = vistos[d][tipoEscolhido];
-        msg += `🎯 Visto (${tipoEscolhido}) para ${d}: ${v} \nLink: ${v.link}\n\n`;
-      } else if(d==='Marrocos'){
-        msg += `🎯 Visto: Não exigido até 90 dias\n`;
-      } else {
-        msg += `🎯 Consulte o consulado para detalhes específicos\n`;
-      }
+        // Função principal para montar o resultado
+        function montarResultado() {
+            const paisOrigem = paisOrigemSelect.value;
+            const paisDestino = paisDestinoSelect.value;
 
-      msg += `💰 Moeda utilizada: ${
-        d==='Brasil'?'Real (R$)': d==='Schengen'?'Euro (€)': d==='EUA'?'Dólar (US$)': 
-        d==='Canada'?'Dólar Canadense (CAD)': d==='Russia'?'Rublo (RUB)':'Moeda local'
-      }\n\n`;
+            // Só gera o resultado se os 3 campos principais estiverem preenchidos
+            if (!paisOrigem || !paisDestino || !tipoEscolhido) {
+                resultadoContainer.classList.add('hidden'); // Esconde o resultado se incompleto
+                return;
+            }
 
-      msg += `📌 Preferencialmente online (site oficial) ou presencial conforme consulado.\n`;
+            let msg = ``;
+            let custoTotalEstimado = 0;
 
-      msg += `🚀 Com apoio humano, há chances mais rápidas e seguras para seu processo.`;
+            msg += `✨ **Informações para você:**\n\n`;
+            msg += `🌎 **Seu caminho:** De **${paisOrigem}** para **${paisDestino}**, buscando **${tipoEscolhido}**.\n\n`;
 
-      document.getElementById('textoResultado').innerText = msg;
-      document.getElementById('resultado').classList.remove('hidden');
-      document.getElementById('resultado').scrollIntoView({behavior:'smooth'});
-    }
-  </script>
+            // --- Dados do País de Origem (Passaporte) ---
+            const infoOrigem = dadosPaises[paisOrigem];
+            if (infoOrigem && infoOrigem.passaporte) {
+                msg += `--- Passaporte em **${paisOrigem}** ---\n`;
+                msg += `📝 **Custo estimado:** ${infoOrigem.passaporte.valor}\n`;
+                msg += `✅ **Requisitos comuns:** ${infoOrigem.passaporte.requisitos || 'Consultar órgão oficial.'}\n`;
+                msg += `🔗 **Link oficial:** ${infoOrigem.passaporte.link || 'N/A'}\n\n`;
+                // Tenta adicionar o custo do passaporte ao total, se for numérico
+                const valorPassaporte = parseFloat(infoOrigem.passaporte.valor.replace(/[^\d,.]/g, '').replace(',', '.'));
+                if (!isNaN(valorPassaporte)) {
+                    custoTotalEstimado += valorPassaporte;
+                }
+            } else {
+                msg += `--- Informações de passaporte para ${paisOrigem} não disponíveis ou não aplicáveis. ---\n\n`;
+            }
+
+            // --- Dados do Visto/Residência no País de Destino ---
+            const infoVisto = dadosVistos[paisDestino] && dadosVistos[paisDestino][tipoEscolhido];
+            if (infoVisto) {
+                msg += `--- Detalhes para **${tipoEscolhido}** em **${paisDestino}** ---\n`;
+                msg += `💡 **Tipo de processo:** ${infoVisto.info}\n`;
+                msg += `🏛️ **Órgão(s) responsável(is):** ${infoVisto.orgao}\n`;
+                msg += `💰 **Custo da taxa oficial:** ${infoVisto.custoTaxa}\n`;
+                msg += `📄 **Documentos e requisitos principais:** ${infoVisto.documentos}\n`;
+                msg += `🔗 **Link oficial:** ${infoVisto.link || 'N/A'}\n\n`;
+                // Tenta adicionar o custo da taxa oficial ao total
+                const valorVisto = parseFloat(infoVisto.custoTaxa.replace(/[^\d,.]/g, '').replace(',', '.'));
+                if (!isNaN(valorVisto)) {
+                    custoTotalEstimado += valorVisto;
+                }
+            } else if (paisDestino === 'Marrocos' && tipoEscolhido === 'Visita') {
+                msg += `--- Detalhes para **${tipoEscolhido}** em **${paisDestino}** ---\n`;
+                msg += `💡 **Visto:** Não exigido para a maioria das nacionalidades para estadias de até 90 dias. Apenas passaporte válido.\n`;
+                msg += `🔗 **Link oficial:** https://www.diplomatie.ma/\n\n`;
+            } else {
+                msg += `--- Informações para **${tipoEscolhido}** em **${paisDestino}** ---\n`;
+                msg += `💡 **Informação:** Para este tipo de serviço e país, por favor, **consulte diretamente o consulado ou embaixada** do ${paisDestino} em seu país de origem para detalhes específicos, documentos e taxas. As regras variam muito!\n`;
+                msg += `🔎 Recomendamos buscar a representação diplomática de ${paisDestino} no ${paisOrigem}.\n\n`;
+            }
+
+            // --- Custos de Serviços Terceirizados ---
+            const servicosTerceirizados = dadosPaises[paisOrigem]?.servicosComuns || dadosPaises[paisDestino]?.servicosComuns;
+            if (servicosTerceirizados) {
+                msg += `--- Custos Adicionais Estimados (Terceiros) ---\n`;
+                msg += `⚖️ **Tradução Juramentada:** ${servicosTerceirizados.traducaoJuramentada || 'Consultar tradutor juramentado'}\n`;
+                msg += `📜 **Apostilamento (Haia):** ${servicosTerceirizados.apostilamento || 'Consultar cartório ou órgão competente'}\n`;
+                msg += `👨‍⚖️ **Assessoria Jurídica/Advogado:** Recomendado para processos complexos (visto de trabalho, residência, refúgio). Custos variam de acordo com o profissional e complexidade do caso (Ex: R$ 5.000 - R$ 20.000+ no Brasil para processos de residência, ou US$ 1.000 - US$ 10.000+ nos EUA).\n\n`;
+            } else {
+                 msg += `--- Custos Adicionais Estimados (Terceiros) ---\n`;
+                 msg += `⚖️ **Tradução Juramentada:** Custos variam bastante. Pesquise por tradutores juramentados em seu país/idioma.\n`;
+                 msg += `📜 **Apostilamento (Haia):** Necessário para validar documentos no exterior. Consulte cartórios ou órgãos competentes no país emissor do documento.\n`;
+                 msg += `👨‍⚖️ **Assessoria Jurídica/Advogado:** Altamente recomendado para processos complexos, como vistos de trabalho, residência, refúgio ou anistia. Os custos variam muito conforme o profissional e a complexidade do caso.\n\n`;
+            }
+
+
+            // --- Custo Total e Observações Finais ---
+            const moedaFinal = dadosPaises[paisDestino]?.moeda || 'Moeda local';
+            msg += `--- Resumo dos Custos (Estimativa) ---\n`;
+            msg += `💸 **Custo total estimado (taxas oficiais):** ${moedaFinal} ${custoTotalEstimado.toFixed(2).replace('.', ',')}\n`;
+            msg += `*(Este valor não inclui passagens, seguro viagem, moradia, ou serviços de terceiros como advogados/tradutores. É uma estimativa das taxas governamentais principais.)*\n\n`;
+
+            msg += `📌 **Observações Importantes:**\n`;
+            msg += `* Preferencialmente online (site oficial) ou presencial conforme consulado/órgão.\n`;
+            msg += `* As informações podem mudar. Sempre consulte os **links oficiais** fornecidos.\n`;
+            msg += `* **Este assistente não substitui uma consulta com um advogado de imigração.** Ele fornece um roteiro inicial, mas cada caso é único e pode exigir análise e acompanhamento profissional para garantir segurança e sucesso no processo.\n\n`;
+            msg += `🚀 Com apoio humano, há chances mais rápidas e seguras para seu processo.`;
+
+            textoResultado.innerText = msg;
+            resultadoContainer.classList.remove('hidden');
+            resultadoContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // --- Event Listeners para acionar montarResultado ---
+        paisOrigemSelect.addEventListener('change', montarResultado);
+        paisDestinoSelect.addEventListener('change', montarResultado);
+        opcoesDiv.addEventListener('click', selecionarTipo); // Usa o novo handler
+
+        // Inicializa o estado dos botões ao carregar a página
+        document.addEventListener('DOMContentLoaded', () => {
+            // Se houver um tipo já selecionado (por exemplo, se você quiser pré-selecionar no futuro)
+            // Ou apenas garante que nenhum botão esteja selecionado no início
+            document.querySelectorAll('#opcoes button').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+        });
+    </script>
 </body>
 </html>
