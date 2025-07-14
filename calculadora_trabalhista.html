@@ -3,121 +3,72 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ACJ Advocacia - Imigrantes</title>
+  <title>Calculadora Trabalhista – ACJ Advocacia</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet" />
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-  <style>
-    .profile-img {
-      object-fit: cover;
-      width: 100%;
-      height: 320px;
-    }
-  </style>
 </head>
-<body class="bg-gray-950 text-white font-sans overflow-x-hidden">
+<body class="bg-gray-950 text-white font-sans min-h-screen flex flex-col items-center justify-start px-4 py-10">
 
-  <!-- NAVBAR -->
-  <nav class="fixed top-0 left-0 w-full z-50 bg-gray-950/90 backdrop-blur-md shadow-lg">
-    <div class="max-w-6xl mx-auto flex items-center justify-between px-4 py-3">
-      <a href="index.html">
-        <img src="acjpuro.png" alt="Logo ACJ" class="h-12 md:h-14 object-contain" />
-      </a>
-      <ul class="hidden md:flex space-x-6 text-white text-sm font-medium">
-        <li><a href="#servicos" class="hover:text-yellow-400">Serviços</a></li>
-        <li><a href="#contato" class="hover:text-yellow-400">Contato</a></li>
-        <li><a href="quemsomos.html" class="hover:text-yellow-400">Quem Somos</a></li>
-      </ul>
-    </div>
-  </nav>
+  <div class="max-w-3xl w-full">
+    <h1 class="text-3xl font-bold mb-4 text-center text-yellow-500">🧮 Calculadora de Verbas Trabalhistas</h1>
+    <p class="text-gray-400 text-center mb-10">Insira os dados do seu contrato de trabalho e simule os valores aproximados das verbas rescisórias que você pode ter direito. Os cálculos são baseados na CLT.</p>
 
-  <!-- HERO COM VÍDEO GLOBO -->
-  <section class="relative w-full h-[500px] overflow-hidden text-white flex items-center justify-center" data-aos="fade-up">
-    <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0">
-      <source src="video_globo.mp4" type="video/mp4" />
-    </video>
-    <div class="absolute inset-0 bg-black bg-opacity-60 z-10 flex flex-col items-center justify-center text-center px-4">
-      <h2 class="text-3xl md:text-4xl font-bold mb-4">Presença Global</h2>
-      <p class="text-gray-300 text-base md:text-lg max-w-3xl">
-        Atendemos imigrantes no Brasil e em qualquer lugar do mundo. Nossa equipe especializada presta serviços jurídicos com mediação internacional, fluência em diversos idiomas e atendimento personalizado.
-      </p>
-    </div>
-  </section>
+    <form id="formulario-calculo" class="space-y-4 bg-gray-900 p-6 rounded-xl shadow-lg">
+      <input type="number" step="0.01" id="salario" placeholder="Salário mensal (R$)" required class="w-full p-3 rounded bg-gray-800 text-white placeholder-gray-400" />
+      
+      <input type="date" id="admissao" placeholder="Data de admissão" required class="w-full p-3 rounded bg-gray-800 text-white placeholder-gray-400" />
+      
+      <input type="date" id="saida" placeholder="Data de saída" required class="w-full p-3 rounded bg-gray-800 text-white placeholder-gray-400" />
+      
+      <label class="block text-sm text-gray-300 mt-4">Foi demitido sem justa causa?</label>
+      <select id="semJustaCausa" class="w-full p-3 rounded bg-gray-800 text-white">
+        <option value="sim">Sim</option>
+        <option value="nao">Não</option>
+      </select>
 
-  <!-- SERVIÇOS -->
-  <section id="servicos" class="py-16 bg-gray-900 px-4" data-aos="fade-up">
-    <div class="text-center mb-10">
-      <h2 class="text-3xl font-bold mb-2">Serviços para Imigrantes</h2>
-      <p class="text-gray-400 text-sm">Consultoria e assistência completa para sua jornada legal.</p>
-    </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-      <div class="bg-gray-800 p-6 rounded-xl shadow-lg">Vistos de trabalho</div>
-      <div class="bg-gray-800 p-6 rounded-xl shadow-lg">Vistos temporários e permanentes</div>
-      <div class="bg-gray-800 p-6 rounded-xl shadow-lg">Naturalização e nacionalidade</div>
-      <div class="bg-gray-800 p-6 rounded-xl shadow-lg">Asilo e refúgio</div>
-      <div class="bg-gray-800 p-6 rounded-xl shadow-lg">Regularização de trabalho</div>
-      <div class="bg-gray-800 p-6 rounded-xl shadow-lg">Contratos e apostilamento</div>
-      <div class="bg-gray-800 p-6 rounded-xl shadow-lg">Traduções e mediações jurídicas</div>
-      <div class="bg-gray-800 p-6 rounded-xl shadow-lg">Comunicação com embaixadas</div>
-      <div class="bg-gray-800 p-6 rounded-xl shadow-lg">Encaminhamento diplomático</div>
-    </div>
-  </section>
+      <button type="submit" class="w-full bg-yellow-600 hover:bg-yellow-500 text-white font-semibold py-3 rounded mt-4 transition">Calcular Verbas</button>
+    </form>
 
-  <!-- EQUIPE ESPECIALIZADA -->
-  <section class="py-16 bg-gray-950 px-4" data-aos="fade-up">
-    <div class="text-center mb-10">
-      <h2 class="text-3xl font-bold mb-6">Especialistas em Atendimento a Imigrantes</h2>
-    </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+    <div id="resultado" class="mt-10 text-yellow-400 text-sm bg-gray-800 p-6 rounded-xl space-y-2 shadow-inner hidden"></div>
+  </div>
 
-      <!-- Card Allan -->
-      <div class="bg-gray-900 rounded-xl overflow-hidden shadow-lg">
-        <img src="foto_allan.jpg" alt="Dr. Allan Cardoso" class="profile-img" />
-        <div class="p-6">
-          <h3 class="text-xl font-bold mb-2">Dr. Allan Cardoso de Jesus</h3>
-          <p class="text-sm text-gray-400 mb-2">Advogado OAB/PR 115.881</p>
-          <p class="text-gray-300 text-sm mb-4">Especialista em Direito Internacional, migratório e causas humanitárias.</p>
-          <div class="flex space-x-4 mb-4">
-            <a href="https://wa.me/5544984342756" class="text-green-400 text-xl"><i class="fab fa-whatsapp"></i></a>
-            <a href="#" class="text-red-500 text-xl"><i class="fab fa-youtube"></i></a>
-            <a href="#" class="text-pink-500 text-xl"><i class="fab fa-tiktok"></i></a>
-            <a href="#" class="text-yellow-400 text-xl"><i class="fab fa-instagram"></i></a>
-          </div>
-        </div>
-      </div>
+  <script>
+    function calcularMesesTrabalhados(admissao, saida) {
+      const inicio = new Date(admissao);
+      const fim = new Date(saida);
+      const anos = fim.getFullYear() - inicio.getFullYear();
+      const meses = fim.getMonth() - inicio.getMonth();
+      return (anos * 12 + meses + 1); // +1 para incluir o mês atual
+    }
 
-      <!-- Card Abdessalem -->
-      <div class="bg-gray-900 rounded-xl overflow-hidden shadow-lg">
-        <img src="foto_abdessalem.jpeg" alt="Abdessalem" class="profile-img" />
-        <div class="p-6">
-          <h3 class="text-xl font-bold mb-2">Abdessalem Boutadla</h3>
-          <p class="text-sm text-gray-400 mb-2">Mediador Internacional</p>
-          <p class="text-gray-300 text-sm mb-4">Natural do Marrocos. Fluente em árabe, português, espanhol, inglês e francês. Atua como assessor, tradutor e mediador internacional.</p>
-          <div class="flex space-x-4 mb-4">
-            <a href="https://wa.me/33628987387" class="text-green-400 text-xl"><i class="fab fa-whatsapp"></i></a>
-            <a href="#" class="text-red-500 text-xl"><i class="fab fa-youtube"></i></a>
-            <a href="#" class="text-pink-500 text-xl"><i class="fab fa-tiktok"></i></a>
-            <a href="#" class="text-yellow-400 text-xl"><i class="fab fa-instagram"></i></a>
-          </div>
-        </div>
-      </div>
+    document.getElementById("formulario-calculo").addEventListener("submit", function (e) {
+      e.preventDefault();
 
-    </div>
-  </section>
+      const salario = parseFloat(document.getElementById("salario").value);
+      const admissao = document.getElementById("admissao").value;
+      const saida = document.getElementById("saida").value;
+      const semJustaCausa = document.getElementById("semJustaCausa").value === "sim";
 
-  <!-- CONTATO / RODAPÉ -->
-  <footer id="contato" class="text-center px-4 py-10 bg-gray-900" data-aos="fade-up">
-    <h3 class="text-xl font-semibold mb-2">Fale Conosco</h3>
-    <p class="text-gray-400 text-sm mb-2">
-      OAB/PR 115.881 · Rua Presidente Faria, 226, sala 3 – Curitiba/PR
-    </p>
-    <a href="https://wa.me/5544984342756" target="_blank" class="inline-block bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-full text-sm font-semibold transition mt-4">
-      Fale com um especialista via WhatsApp
-    </a>
-  </footer>
+      const mesesTrabalhados = calcularMesesTrabalhados(admissao, saida);
+      const ferias = salario * (1/12) * mesesTrabalhados + (salario * (1/3)); // férias + 1/3 constitucional
+      const decimoTerceiro = salario * (mesesTrabalhados / 12);
+      const avisoPrevio = semJustaCausa ? salario : 0;
+      const multaFgts = semJustaCausa ? salario * 0.4 : 0;
 
-  <!-- Scripts -->
-  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
-  <script>AOS.init({ duration: 1000, once: true });</script>
+      const total = ferias + decimoTerceiro + avisoPrevio + multaFgts;
+
+      const resultadoHTML = `
+        <p><strong>Férias proporcionais + 1/3:</strong> R$ ${ferias.toFixed(2)} <br><span class="text-xs text-gray-300">Art. 129 e 130 da CLT</span></p>
+        <p><strong>13º salário proporcional:</strong> R$ ${decimoTerceiro.toFixed(2)} <br><span class="text-xs text-gray-300">Lei nº 4.090/62</span></p>
+        ${semJustaCausa ? `<p><strong>Aviso Prévio:</strong> R$ ${avisoPrevio.toFixed(2)} <br><span class="text-xs text-gray-300">Art. 487 da CLT</span></p>` : ""}
+        ${semJustaCausa ? `<p><strong>Multa de 40% do FGTS:</strong> R$ ${multaFgts.toFixed(2)} <br><span class="text-xs text-gray-300">Art. 18, §1º da Lei 8.036/90</span></p>` : ""}
+        <p class="mt-4 text-lg font-semibold text-white">💰 <strong>Total estimado:</strong> R$ ${total.toFixed(2)}</p>
+        <p class="text-xs text-gray-400 mt-2">* Os valores são estimativas e podem variar conforme adicionais, descontos e decisões judiciais. Consulte um advogado para análise completa.</p>
+      `;
+
+      const resultado = document.getElementById("resultado");
+      resultado.innerHTML = resultadoHTML;
+      resultado.classList.remove("hidden");
+    });
+  </script>
 </body>
 </html>
