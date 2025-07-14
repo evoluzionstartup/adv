@@ -1,276 +1,205 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Advocacia.site - Tecnologia para Advogados</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ACJ Advocacia – Justiça com Presença</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet" />
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #fefefe;
-      color: #222;
-    }
-
-    /* NAVBAR */
-    .navbar {
-      background-color: #0d0d0d;
+    .whatsapp-float {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #25D366;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      padding: 1rem 2rem;
-      color: white;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .3);
+      z-index: 999;
+      transition: transform .2s ease;
     }
-
-    .navbar h1 {
-      margin: 0;
-      font-size: 1.8rem;
+    .whatsapp-float:hover {
+      transform: scale(1.1);
+      background: #1ebe5d;
     }
-
-    .nav-links {
-      display: flex;
-      gap: 1rem;
+    .carousel {
+      position: relative;
+      height: 300px;
+      overflow: hidden;
     }
-
-    .nav-links a {
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
+    .carousel-slide {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
     }
-
-    .hamburger {
-      display: none;
-      flex-direction: column;
-      cursor: pointer;
-    }
-
-    .hamburger div {
-      width: 25px;
-      height: 3px;
-      background-color: white;
-      margin: 4px 0;
-    }
-
-    @media (max-width: 768px) {
-      .nav-links {
-        display: none;
-        flex-direction: column;
-        background-color: #0d0d0d;
-        position: absolute;
-        top: 70px;
-        right: 0;
-        width: 200px;
-        padding: 1rem;
-      }
-
-      .nav-links.active {
-        display: flex;
-      }
-
-      .hamburger {
-        display: flex;
-      }
-    }
-
-    header {
-      background: #0d0d0d;
-      color: #fff;
-      padding: 2rem 1rem;
-      text-align: center;
-    }
-
-    header p {
-      margin-top: 1rem;
-      font-size: 1.1rem;
-      color: #ccc;
-    }
-
-    section {
-      padding: 2rem;
-      max-width: 1000px;
-      margin: auto;
-    }
-
-    h2 {
-      color: #1a1a1a;
-      border-bottom: 2px solid #ccc;
-      padding-bottom: 0.5rem;
-      margin-top: 2rem;
-    }
-
-    ul {
-      margin: 1rem 0;
-      padding-left: 1.5rem;
-    }
-
-    li {
-      margin-bottom: 0.5rem;
-    }
-
-    .highlight {
-      color: #0070f3;
-      font-weight: bold;
-    }
-
-    .cta {
-      background: #0070f3;
-      color: white;
-      padding: 2rem;
-      text-align: center;
-      margin-top: 3rem;
-      border-radius: 10px;
-    }
-
-    .cta a {
-      background: white;
-      color: #0070f3;
-      padding: 0.7rem 1.5rem;
-      border-radius: 6px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    .plans {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 2rem;
-      margin-top: 2rem;
-    }
-
-    .plan {
-      background: #f4f4f4;
-      padding: 1.5rem;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-      text-align: center;
-    }
-
-    .tools-section {
-      background: #e9f5ec;
-      border-left: 6px solid #2e7d32;
-      padding: 2rem;
-      margin-top: 3rem;
-      border-radius: 10px;
-    }
-
-    .tools-section a {
-      display: inline-block;
-      margin-top: 1rem;
-      padding: 0.7rem 1.5rem;
-      background-color: #2e7d32;
-      color: white;
-      text-decoration: none;
-      border-radius: 6px;
-      font-weight: bold;
-    }
-
-    .tools-section a:hover {
-      background-color: #1b5e20;
-    }
-
-    footer {
-      background: #111;
-      color: #ccc;
-      text-align: center;
-      padding: 1rem;
-      margin-top: 3rem;
+    .carousel-slide.active {
+      opacity: 1;
     }
   </style>
 </head>
-<body>
+<body class="bg-gray-950 text-white font-sans relative overflow-x-hidden">
 
-  <!-- NAVBAR -->
-  <nav class="navbar">
-    <h1>Advocacia.Site</h1>
-    <div class="nav-links" id="navLinks">
-      <a href="index.html">Início</a>
-      <a href="ferramentas_justica.html">Ferramentas</a>
-      <a href="mailto:advocacia@evoluzion.space">Contato</a>
+  <a href="https://wa.me/5544984342756" class="whatsapp-float" target="_blank" aria-label="Fale conosco no WhatsApp">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" class="w-7 h-7" />
+  </a>
+
+  <nav class="fixed top-0 left-0 w-full z-50 bg-gray-950/90 backdrop-blur-md shadow-lg">
+    <div class="max-w-6xl mx-auto flex items-center justify-between px-4 py-3">
+      <button id="btn-mobile-menu" aria-label="Abrir menu" aria-expanded="false" aria-controls="mobile-menu"
+        class="md:hidden text-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-500 rounded">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+      <a href="index.html" class="flex-shrink-0 mx-auto md:mx-0">
+        <img src="acjpuro.png" alt="Logo ACJ" class="h-12 object-contain" />
+      </a>
+      <ul id="desktop-menu" class="hidden md:flex space-x-6 text-sm font-medium text-gray-200">
+        <li><a href="#atuacoes" class="hover:text-yellow-400">Especialidades</a></li>
+        <li><a href="#contato" class="hover:text-yellow-400">Contato</a></li>
+        <li><a href="quemsomos.html" class="hover:text-yellow-400">Quem Somos</a></li>
+        <li><a href="ferramentas_justica.html" class="hover:text-yellow-400">Ferramentas</a></li>
+      </ul>
     </div>
-    <div class="hamburger" onclick="toggleMenu()">
-      <div></div>
-      <div></div>
-      <div></div>
+    <div id="mobile-menu" class="md:hidden bg-gray-900/95 backdrop-blur-md shadow-inner hidden" role="menu" aria-label="Menu móvel">
+      <ul class="flex flex-col py-3 space-y-2 text-center text-white font-medium text-base">
+        <li><a href="#atuacoes" class="block py-1.5 hover:bg-yellow-600 hover:text-gray-900 rounded">Especialidades</a></li>
+        <li><a href="#contato" class="block py-1.5 hover:bg-yellow-600 hover:text-gray-900 rounded">Contato</a></li>
+        <li><a href="quemsomos.html" class="block py-1.5 hover:bg-yellow-600 hover:text-gray-900 rounded">Quem Somos</a></li>
+        <li><a href="ferramentas_justica.html" class="block py-1.5 hover:bg-yellow-600 hover:text-gray-900 rounded">Ferramentas</a></li>
+      </ul>
     </div>
   </nav>
 
-  <!-- HEADER -->
-  <header>
-    <p>Soluções Digitais para Advogados da Nova Era</p>
+  <header class="pt-28 pb-6 flex justify-center" data-aos="fade-down">
+    <img src="drallanpuro.png" alt="Dr. Allan Cardoso" class="w-full max-w-4xl px-4 object-contain"/>
   </header>
 
-  <!-- CONTEÚDO PRINCIPAL -->
-  <section>
-    <h2>👩‍⚖️ Para Escritórios Modernos</h2>
-    <p>Oferecemos sites profissionais, subdomínios personalizados (<span class="highlight">seudominio.advocacia.site</span>), e-mails corporativos, suporte técnico e assistentes jurídicas automatizadas com IA.</p>
+  <section id="hero" class="text-center px-4 pt-8 pb-20" data-aos="fade-up">
+    <h1 class="text-4xl md:text-5xl font-bold mb-6">A justiça começa quando sua história é ouvida</h1>
+    <p class="text-gray-300 text-lg max-w-2xl mx-auto mb-8">Atendimento jurídico humanizado e tecnológico, com raízes na periferia e presença em todo o Brasil.</p>
+    <a href="#atuacoes" class="inline-block bg-yellow-600 hover:bg-yellow-500 text-white px-6 py-3 rounded-full text-lg font-semibold transition">Conheça seus direitos abaixo</a>
+  </section>
 
-    <h2>🤖 Assistente Jurídica Inteligente</h2>
-    <ul>
-      <li>✅ Atendimento automatizado via WhatsApp</li>
-      <li>✅ Triagem jurídica por IA com linguagem natural</li>
-      <li>✅ Coleta de dados para petições iniciais e contratos</li>
-      <li>✅ Agendamento automático de consultas</li>
-      <li>✅ Envio de documentos com assinatura eletrônica via ID1</li>
-      <li>✅ Personalização com IAs próprias, chatbots ou atendentes humanos</li>
-    </ul>
-
-    <h2>💼 Planos de Presença Digital</h2>
-    <div class="plans">
-      <div class="plan">
-        <h3>Plano Essencial</h3>
-        <p><strong>R$ 49/mês</strong></p>
-        <ul>
-          <li>🔹 Subdomínio .advocacia.site</li>
-          <li>🔹 E-mail personalizado</li>
-          <li>🔹 Site profissional pronto</li>
-        </ul>
-      </div>
-      <div class="plan">
-        <h3>Plano Avançado</h3>
-        <p><strong>R$ 149/mês</strong></p>
-        <ul>
-          <li>🔹 Tudo do Essencial</li>
-          <li>🔹 Assistente jurídica por IA</li>
-          <li>🔹 Formulários e pré-atendimento</li>
-          <li>🔹 Agendamento automático</li>
-        </ul>
-      </div>
-      <div class="plan">
-        <h3>Plano Supremo</h3>
-        <p><strong>R$ 299/mês</strong></p>
-        <ul>
-          <li>🔹 Tudo do Avançado</li>
-          <li>🔹 WhatsApp único com múltiplos atendentes</li>
-          <li>🔹 Integrações com CRM e automações</li>
-          <li>🔹 Suporte técnico prioritário</li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- NOVA SEÇÃO DE FERRAMENTAS -->
-    <div class="tools-section">
-      <h2>🛠️ Ferramentas Gratuitas e Públicas</h2>
-      <p>Explore utilitários jurídicos digitais, simuladores, modelos de petição, direitos básicos automatizados e mais. Tudo disponível em um só lugar.</p>
-      <a href="ferramentas_justica.html">Acessar Ferramentas de Justiça Social</a>
-    </div>
-
-    <div class="cta">
-      <h2>🚀 Traga sua advocacia para o futuro</h2>
-      <p>Cadastre-se agora e receba 15 dias grátis para experimentar sua nova identidade digital.</p>
-      <a href="mailto:advocacia@evoluzion.space">Quero meu domínio</a>
+  <section id="atuacoes" class="px-4 pb-24" data-aos="fade-up">
+    <h2 class="text-3xl font-semibold text-center mb-6">Atuação Jurídica Estratégica</h2>
+    <p class="text-gray-400 text-center mb-10">Entenda seus direitos nessas áreas</p>
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-w-6xl mx-auto text-sm">
+      <a href="imigrantes.html" class="bg-gray-800 hover:bg-yellow-600 p-4 rounded-xl text-center transition">Imigrantes</a>
+      <a href="direito_trabalhista.html" class="bg-gray-800 hover:bg-yellow-600 p-4 rounded-xl text-center transition">Direito Trabalhista</a>
+      <a href="consumidor.html" class="bg-gray-800 hover:bg-yellow-600 p-4 rounded-xl text-center transition">Consumidor</a>
+      <a href="previdenciario.html" class="bg-gray-800 hover:bg-yellow-600 p-4 rounded-xl text-center transition">Previdenciário</a>
+      <a href="empresarial.html" class="bg-gray-800 hover:bg-yellow-600 p-4 rounded-xl text-center transition">Empresarial</a>
+      <a href="internacional.html" class="bg-gray-800 hover:bg-yellow-600 p-4 rounded-xl text-center transition">Internacional</a>
+      <a href="#" class="bg-gray-800 hover:bg-yellow-600 p-4 rounded-xl text-center transition">Advocacia e Assistência Jurídica Geral</a>
+      <a href="empreendedor.html" class="bg-gray-800 hover:bg-yellow-600 p-4 rounded-xl text-center transition">Compliance e Tecnologia</a>
     </div>
   </section>
 
-  <footer>
-    <p>© 2025 Advocacia.Site - Um projeto da Evoluzion</p>
+  <section class="relative h-[300px]" data-aos="fade">
+    <div class="carousel">
+      <div class="carousel-slide bg-cover" style="background-image: url('foto1.jpg')"></div>
+      <div class="carousel-slide bg-cover" style="background-image: url('abdessalemfoto.jpeg')"></div>
+      <div class="carousel-slide bg-cover" style="background-image: url('foto_ruany.jpg')"></div>
+      <div class="carousel-slide bg-cover" style="background-image: url('foto_alex.jpg')"></div>
+    </div>
+    <div class="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center text-center">
+      <div>
+        <h2 class="text-3xl font-bold mb-4">Conheça Nossa Equipe</h2>
+        <p class="text-gray-300 mb-4">Profissionais qualificados e conectados globalmente para atuar com você.</p>
+        <a href="quemsomos.html" class="bg-yellow-600 hover:bg-yellow-500 text-white px-6 py-3 rounded-full font-semibold">Ver equipe completa</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="contato" class="bg-gray-900 px-4 py-20" data-aos="fade-up">
+    <div class="max-w-2xl mx-auto text-center mb-10">
+      <h2 class="text-3xl font-semibold mb-4">Entre em Contato</h2>
+      <p class="text-gray-400">Preencha o formulário ou clique no botão de WhatsApp para falar no seu idioma nativo, diretamente com a nossa equipe.</p>
+    </div>
+    <form action="#" method="POST" class="max-w-xl mx-auto space-y-4">
+      <input required type="text" name="nome" placeholder="Nome completo" class="w-full p-3 rounded bg-gray-800 text-white placeholder-gray-400" />
+      <input required type="text" name="contato" placeholder="Telefone ou e-mail" class="w-full p-3 rounded bg-gray-800 text-white placeholder-gray-400" />
+      <input required type="text" name="nacionalidade" placeholder="Nacionalidade ou país de origem" class="w-full p-3 rounded bg-gray-800 text-white placeholder-gray-400" />
+      <button type="submit" class="w-full bg-yellow-600 hover:bg-yellow-500 py-3 rounded text-lg font-semibold transition">Enviar</button>
+    </form>
+    <div class="text-center mt-6">
+      <a href="https://wa.me/5544984342756" target="_blank" class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-500 px-5 py-3 rounded-full font-semibold shadow-lg transition">
+        Converse via WhatsApp no seu Idioma ou Dileto
+      </a>
+    </div>
+  </section>
+
+  <section class="px-4 pb-24" data-aos="fade-up">
+    <div class="max-w-4xl mx-auto text-center">
+      <h2 class="text-3xl font-semibold mb-6">🧰 Ferramentas Públicas de Justiça</h2>
+      <p class="text-gray-400 mb-8">Acesse ferramentas gratuitas que ajudam você a entender e reivindicar seus direitos com autonomia e orientação.</p>
+      <a href="ferramentas_justica.html" class="inline-block bg-yellow-600 hover:bg-yellow-500 text-white px-6 py-3 rounded-full text-lg font-semibold shadow-lg transition">
+        Acessar Ferramentas de Justiça Social
+      </a>
+    </div>
+  </section>
+
+  <footer class="text-center px-4 py-10 text-sm text-gray-400">
+    <p>OAB/PR 115.881 – Rua Presidente Faria, 226, sala 3 – Curitiba/PR<br>(Esquina com a UFPR – Praça Santos Andrade)</p>
+    <p class="mt-2">WhatsApp: +55 44 98434-2756</p>
+    <p class="mt-4 text-xs text-yellow-500">Equipe: Dr. Allan Cardoso de Jesus &middot; ABDESSELAM BOUTADLA – Assessor e mediador internacional (Árabe, Português, Espanhol, Inglês, Francês).</p>
   </footer>
 
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
   <script>
-    function toggleMenu() {
-      const nav = document.getElementById("navLinks");
-      nav.classList.toggle("active");
+    AOS.init({ duration: 1000, once: true });
+
+    const btnMobileMenu = document.getElementById('btn-mobile-menu');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    function toggleMobileMenu() {
+      const isHidden = mobileMenu.classList.contains('hidden');
+      mobileMenu.classList.toggle('hidden');
+      btnMobileMenu.setAttribute('aria-expanded', String(isHidden));
+    }
+
+    function closeMobileMenu() {
+      if (!mobileMenu.classList.contains('hidden')) {
+        mobileMenu.classList.add('hidden');
+        btnMobileMenu.setAttribute('aria-expanded', 'false');
+      }
+    }
+
+    btnMobileMenu.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleMobileMenu();
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!mobileMenu.contains(e.target) && !btnMobileMenu.contains(e.target)) {
+        closeMobileMenu();
+      }
+    });
+
+    window.addEventListener('scroll', closeMobileMenu);
+
+    const slides = document.querySelectorAll('.carousel-slide');
+    let current = 0;
+    function nextSlide() {
+      slides[current].classList.remove('active');
+      current = (current + 1) % slides.length;
+      slides[current].classList.add('active');
+    }
+    if (slides.length > 0) {
+      slides[0].classList.add('active');
+      setInterval(nextSlide, 3000);
     }
   </script>
-
 </body>
 </html>
