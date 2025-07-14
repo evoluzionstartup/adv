@@ -40,27 +40,43 @@
             width: 100%;
             text-align: center;
         }
+        /* Removido .quick-start-button pois os botões serão excluídos */
     </style>
 </head>
 <body class="bg-gray-100 text-gray-900 font-sans">
 
-    <header class="bg-gray-800 text-white py-6 text-center shadow-md">
+    <!-- Header removido para simplificar a parte superior -->
+    <!-- <header class="bg-gray-800 text-white py-6 text-center shadow-md">
         <h1 class="text-3xl font-bold">🌍 Assistente Migratório Humanitário (Beta)</h1>
         <p class="mt-2 text-sm">Sua conversa direta para esclarecer dúvidas sobre imigração.</p>
-    </header>
+    </header> -->
 
     <main class="max-w-xl mx-auto px-4 py-8 space-y-8">
 
         <!-- Seção do Chatbot Gemini -->
-        <section class="bg-white p-6 rounded-lg shadow-lg border-t-4 border-blue-600">
-            <h2 class="text-2xl font-bold text-blue-800 mb-4 text-center">💬 Converse com nosso Assistente de IA!</h2>
+        <section id="chatSection" class="bg-white p-6 rounded-lg shadow-lg border-t-4 border-blue-600">
+            <!-- Título "Converse com nosso Assistente de IA!" removido -->
             
+            <!-- Frase de Boas-Vindas Multilíngue com Bandeiras -->
             <div class="mb-6 text-center text-gray-700">
-                <p>Olá! Eu sou seu assistente migratório da Evoluzion.</p>
-                <p class="mt-1">Posso te ajudar a entender os passos iniciais e dar orientações gerais sobre processos migratórios.</p>
-                <p class="mt-2 font-semibold">Como posso te ajudar hoje?</p>
-                <p class="mt-2 text-sm text-gray-500">Você pode perguntar sobre: visto de turismo, trabalho, residência, refúgio, documentos necessários, etc.</p>
+                <p class="text-lg font-semibold">🇧🇷 Tire sua dúvida de viagem, imigração e migração abaixo.</p>
+                <p class="text-base">🇬🇧 Ask your travel, immigration, and migration questions below.</p>
+                <p class="text-base">🇪🇸 Resuelve tus dudas de viaje, inmigración y migración a continuación.</p>
+                <p class="text-base">🇫🇷 Posez vos questions sur les voyages, l'immigration et la migration ci-dessous.</p>
+                <p class="text-base">🇷🇺 Задайте свои вопросы о путешествиях, иммиграции и миграции ниже.</p>
+                <p class="text-base">🇸🇦 اطرح أسئلتك حول السفر والهجرة والنزوح أدناه.</p>
+                <p class="text-base">🇮🇳 अपनी यात्रा, आव्रजन और प्रवासन संबंधी प्रश्न नीचे पूछें।</p>
+                <p class="text-base">🇨🇳 在下方提出您的旅行、移民和移居问题。</p>
             </div>
+
+            <!-- Botões de Início Rápido removidos -->
+            <!-- <div id="quickStartButtons" class="flex flex-wrap justify-center gap-2 mb-4">
+                <button class="quick-start-button" data-query="Quero saber sobre visto de turismo.">Visto de Turismo</button>
+                <button class="quick-start-button" data-query="Como posso conseguir um visto de trabalho?">Visto de Trabalho</button>
+                <button class="quick-start-button" data-query="Quais os requisitos para residência permanente?">Residência Permanente</button>
+                <button class="quick-start-button" data-query="Preciso de ajuda com refúgio.">Ajuda com Refúgio</button>
+                <button class="quick-start-button" data-query="Quais documentos são necessários para imigrar?">Documentos Necessários</button>
+            </div> -->
 
             <div id="chatMessages" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
                 <!-- Mensagens do chat aparecerão aqui -->
@@ -97,47 +113,62 @@
         const chatMessages = document.getElementById('chatMessages');
         const chatError = document.getElementById('chatError');
         const chatLoading = document.getElementById('chatLoading');
+        // const quickStartButtonsDiv = document.getElementById('quickStartButtons'); // Removido
+        const chatSection = document.getElementById('chatSection'); 
+
+        // Tenta detectar o idioma do navegador para usar como idioma padrão
+        let currentLanguage = 'pt'; // Fallback padrão
+        const browserLanguage = navigator.language || navigator.userLanguage;
+        if (browserLanguage) {
+            // Mapeia idiomas mais específicos para os que temos suporte
+            if (browserLanguage.startsWith('en')) currentLanguage = 'en';
+            else if (browserLanguage.startsWith('es')) currentLanguage = 'es';
+            else if (browserLanguage.startsWith('fr')) currentLanguage = 'fr';
+            else if (browserLanguage.startsWith('ru')) currentLanguage = 'ru';
+            else if (browserLanguage.startsWith('ar')) currentLanguage = 'ar';
+            else if (browserLanguage.startsWith('hi')) currentLanguage = 'hi';
+            else if (browserLanguage.startsWith('zh')) currentLanguage = 'zh';
+            else if (browserLanguage.startsWith('pt')) currentLanguage = 'pt';
+        }
+
+        let chatHistory = []; // Array para armazenar o histórico da conversa
 
         // --- IMPORTANTE: SUBSTITUA ESTE URL PELO SEU ENDPOINT REAL DO VERCEL FUNCTIONS ---
-        // Certifique-se de que termina com /api/chat
         const GEMINI_BACKEND_URL = 'https://assistente-gemini-backend.vercel.app/api/chat'; 
 
-        // Adiciona uma mensagem inicial do assistente ao carregar
-        document.addEventListener('DOMContentLoaded', () => {
-            displayMessage('Olá! Eu sou seu assistente migratório da Evoluzion. Posso te ajudar a entender os passos iniciais e dar orientações gerais sobre processos migratórios. Como posso te ajudar hoje?', 'gemini');
-        });
-
         /**
-         * Adiciona uma mensagem ao histórico do chat.
+         * Adiciona uma mensagem ao histórico do chat na interface e no array chatHistory.
          * @param {string} message - O texto da mensagem.
          * @param {string} sender - O remetente da mensagem ('user', 'gemini', 'error').
          */
         function displayMessage(message, sender) {
             const messageElement = document.createElement('div');
-            // Adiciona classes base para todas as mensagens
             messageElement.classList.add('p-3', 'rounded-lg', 'max-w-[85%]', 'break-words'); 
 
             if (sender === 'user') {
                 messageElement.classList.add('user-message');
                 messageElement.innerHTML = `<strong class="font-medium">Você:</strong> ${message}`;
+                chatHistory.push({ role: 'user', parts: [{ text: message }] }); // Adiciona ao histórico
             } else if (sender === 'gemini') {
                 messageElement.classList.add('gemini-message');
                 messageElement.innerHTML = `<strong class="font-medium">Assistente:</strong> ${message}`;
+                chatHistory.push({ role: 'model', parts: [{ text: message }] }); // Adiciona ao histórico
             } else if (sender === 'error') {
                 messageElement.classList.add('error-message');
                 messageElement.innerHTML = `<strong class="font-medium">Erro:</strong> ${message}`;
+                // Erros não são adicionados ao histórico para não confundir a IA
             }
             chatMessages.appendChild(messageElement);
-            // Rola para o final do chat para mostrar a nova mensagem
             chatMessages.scrollTop = chatMessages.scrollHeight; 
         }
 
         /**
-         * Envia a mensagem do usuário para o backend do Gemini e exibe a resposta.
+         * Envia a mensagem do usuário para o backend Gemini e exibe a resposta.
+         * @param {string} message - A mensagem a ser enviada.
          */
-        async function sendChatMessage() {
-            const userMessage = chatInput.value.trim();
-            if (!userMessage) return; // Não envia mensagem vazia
+        async function sendChatMessage(message) {
+            const userMessage = message.trim();
+            if (!userMessage) return;
 
             displayMessage(userMessage, 'user'); // Exibe a mensagem do usuário
             chatInput.value = ''; // Limpa o input
@@ -152,9 +183,10 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    // Envia apenas a mensagem do usuário para o backend simplificado
                     body: JSON.stringify({
-                        message: userMessage
+                        message: userMessage,
+                        language: currentLanguage, // Envia o idioma detectado/padrão
+                        chatHistory: chatHistory // Envia o histórico completo da conversa
                     })
                 });
 
@@ -172,20 +204,32 @@
                 chatError.classList.remove('hidden');
                 displayMessage('Desculpe, não consegui processar sua solicitação agora. Por favor, tente novamente.', 'error');
             } finally {
-                // Reabilita input e botão e esconde indicadores de status
                 chatInput.disabled = false;
                 chatSendBtn.disabled = false;
                 chatLoading.classList.add('hidden'); 
-                chatInput.focus(); // Retorna o foco para o input
+                chatInput.focus();
             }
         }
 
-        // Event Listeners para o envio de mensagens
-        chatSendBtn.addEventListener('click', sendChatMessage);
+        // Event Listener para os botões de início rápido removido
+        // quickStartButtonsDiv.addEventListener('click', (event) => {
+        //     if (event.target.classList.contains('quick-start-button')) {
+        //         const query = event.target.dataset.query;
+        //         sendChatMessage(query);
+        //     }
+        // });
+
+        // Event Listeners para o envio de mensagens pelo input
+        chatSendBtn.addEventListener('click', () => sendChatMessage(chatInput.value));
         chatInput.addEventListener('keypress', (event) => {
             if (event.key === 'Enter') {
-                sendChatMessage();
+                sendChatMessage(chatInput.value);
             }
+        });
+
+        // Inicializa a página mostrando o chat diretamente
+        document.addEventListener('DOMContentLoaded', () => {
+            chatInput.focus(); // Coloca o foco no campo de input
         });
     </script>
 </body>
