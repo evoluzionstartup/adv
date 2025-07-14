@@ -30,6 +30,7 @@
             text-align: left;
             padding: 10px 14px;
             border-radius: 18px 18px 18px 2px; /* Borda arredondada diferenciada */
+            white-space: pre-wrap; /* Adicionado para respeitar quebras de linha e espaços */
         }
         .error-message {
             background-color: #fee2e2; /* bg-red-100 */
@@ -40,44 +41,17 @@
             width: 100%;
             text-align: center;
         }
-        /* Removido .quick-start-button pois os botões serão excluídos */
     </style>
 </head>
 <body class="bg-gray-100 text-gray-900 font-sans">
-
-    <!-- Header removido para simplificar a parte superior -->
-    <!-- <header class="bg-gray-800 text-white py-6 text-center shadow-md">
-        <h1 class="text-3xl font-bold">🌍 Assistente Migratório Humanitário (Beta)</h1>
-        <p class="mt-2 text-sm">Sua conversa direta para esclarecer dúvidas sobre imigração.</p>
-    </header> -->
 
     <main class="max-w-xl mx-auto px-4 py-8 space-y-8">
 
         <!-- Seção do Chatbot Gemini -->
         <section id="chatSection" class="bg-white p-6 rounded-lg shadow-lg border-t-4 border-blue-600">
-            <!-- Título "Converse com nosso Assistente de IA!" removido -->
+            <!-- Título do container com emojis (ADICIONADO AQUI) -->
+            <h2 class="text-2xl font-bold text-blue-800 mb-4 text-center">✍️🤝🌐 Converse com nosso Assistente Humanitário!</h2>
             
-            <!-- Frase de Boas-Vindas Multilíngue com Bandeiras -->
-            <div class="mb-6 text-center text-gray-700">
-                <p class="text-lg font-semibold">🇧🇷 Tire sua dúvida de viagem, imigração e migração abaixo.</p>
-                <p class="text-base">🇬🇧 Ask your travel, immigration, and migration questions below.</p>
-                <p class="text-base">🇪🇸 Resuelve tus dudas de viaje, inmigración y migración a continuación.</p>
-                <p class="text-base">🇫🇷 Posez vos questions sur les voyages, l'immigration et la migration ci-dessous.</p>
-                <p class="text-base">🇷🇺 Задайте свои вопросы о путешествиях, иммиграции и миграции ниже.</p>
-                <p class="text-base">🇸🇦 اطرح أسئلتك حول السفر والهجرة والنزوح أدناه.</p>
-                <p class="text-base">🇮🇳 अपनी यात्रा, आव्रजन और प्रवासन संबंधी प्रश्न नीचे पूछें।</p>
-                <p class="text-base">🇨🇳 在下方提出您的旅行、移民和移居问题。</p>
-            </div>
-
-            <!-- Botões de Início Rápido removidos -->
-            <!-- <div id="quickStartButtons" class="flex flex-wrap justify-center gap-2 mb-4">
-                <button class="quick-start-button" data-query="Quero saber sobre visto de turismo.">Visto de Turismo</button>
-                <button class="quick-start-button" data-query="Como posso conseguir um visto de trabalho?">Visto de Trabalho</button>
-                <button class="quick-start-button" data-query="Quais os requisitos para residência permanente?">Residência Permanente</button>
-                <button class="quick-start-button" data-query="Preciso de ajuda com refúgio.">Ajuda com Refúgio</button>
-                <button class="quick-start-button" data-query="Quais documentos são necessários para imigrar?">Documentos Necessários</button>
-            </div> -->
-
             <div id="chatMessages" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
                 <!-- Mensagens do chat aparecerão aqui -->
             </div>
@@ -113,7 +87,6 @@
         const chatMessages = document.getElementById('chatMessages');
         const chatError = document.getElementById('chatError');
         const chatLoading = document.getElementById('chatLoading');
-        // const quickStartButtonsDiv = document.getElementById('quickStartButtons'); // Removido
         const chatSection = document.getElementById('chatSection'); 
 
         // Tenta detectar o idioma do navegador para usar como idioma padrão
@@ -135,6 +108,25 @@
 
         // --- IMPORTANTE: SUBSTITUA ESTE URL PELO SEU ENDPOINT REAL DO VERCEL FUNCTIONS ---
         const GEMINI_BACKEND_URL = 'https://assistente-gemini-backend.vercel.app/api/chat'; 
+
+        // Mensagem inicial multilíngue combinada
+        const combinedInitialMessage = `
+            🇧🇷 Tire sua dúvida de viagem, imigração e migração abaixo.
+
+            🇬🇧 Ask your travel, immigration, and migration questions below.
+
+            🇪🇸 Resuelve tus dudas de viaje, inmigración y migración a continuación.
+
+            🇫🇷 Posez vos questions sur les voyages, l'immigration et la migration ci-dessous.
+
+            🇷🇺 Задайте свои вопросы о путешествиas, иммиграции и миграции ниже.
+
+            🇸🇦 اطرح أسئلتك حول السفر والهجرة والنزوح أدناه.
+
+            🇮🇳 अपनी यात्रा, आव्रजन और प्रवासन संबंधी प्रश्न नीचे पूछें।
+
+            🇨🇳 在下方提出您的旅行, 移民和移居问题。
+        `;
 
         /**
          * Adiciona uma mensagem ao histórico do chat na interface e no array chatHistory.
@@ -211,14 +203,6 @@
             }
         }
 
-        // Event Listener para os botões de início rápido removido
-        // quickStartButtonsDiv.addEventListener('click', (event) => {
-        //     if (event.target.classList.contains('quick-start-button')) {
-        //         const query = event.target.dataset.query;
-        //         sendChatMessage(query);
-        //     }
-        // });
-
         // Event Listeners para o envio de mensagens pelo input
         chatSendBtn.addEventListener('click', () => sendChatMessage(chatInput.value));
         chatInput.addEventListener('keypress', (event) => {
@@ -227,8 +211,9 @@
             }
         });
 
-        // Inicializa a página mostrando o chat diretamente
+        // Inicializa a página mostrando o chat diretamente e a mensagem inicial
         document.addEventListener('DOMContentLoaded', () => {
+            displayMessage(combinedInitialMessage, 'gemini'); // Exibe a mensagem inicial no chat
             chatInput.focus(); // Coloca o foco no campo de input
         });
     </script>
