@@ -6,115 +6,92 @@
     <title>Assistente Migratório Humanitário – Evoluzion</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .flag { width: 24px; height: 16px; margin-right: 8px; vertical-align: middle; }
-        button {
-            padding: 12px 18px;
-            background-color: #e5e7eb; /* Cor padrão dos botões */
+        /* Estilos básicos para o chat - mantém a aparência do Tailwind */
+        #chatMessages {
+            min-height: 300px; /* Garante uma altura mínima para a área de mensagens */
+            max-height: 500px; /* Altura máxima com scroll */
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px; /* Espaço entre as mensagens */
+        }
+        .user-message {
+            background-color: #dbeafe; /* bg-blue-100 */
+            align-self: flex-end;
+            margin-left: auto;
+            text-align: right;
+            padding: 10px 14px;
+            border-radius: 18px 18px 2px 18px; /* Borda arredondada diferenciada */
+        }
+        .gemini-message {
+            background-color: #f3f4f6; /* bg-gray-100 */
+            align-self: flex-start;
+            margin-right: auto;
+            text-align: left;
+            padding: 10px 14px;
+            border-radius: 18px 18px 18px 2px; /* Borda arredondada diferenciada */
+        }
+        .error-message {
+            background-color: #fee2e2; /* bg-red-100 */
+            color: #ef4444; /* text-red-500 */
+            padding: 10px;
             border-radius: 8px;
-            font-weight: 500;
+            align-self: center;
+            width: 100%;
             text-align: center;
-            cursor: pointer;
-            transition: background-color 0.2s, color 0.2s;
-        }
-        button:hover {
-            background-color: #d1d5db;
-        }
-        button.selected {
-            background-color: #fde047; /* Amarelo */
-            color: #1f2937; /* Texto escuro para contraste */
-            font-weight: bold;
-        }
-        #resultado {
-            white-space: pre-wrap; /* Permite quebras de linha e espaços no texto */
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-900">
+<body class="bg-gray-100 text-gray-900 font-sans">
 
     <header class="bg-gray-800 text-white py-6 text-center shadow-md">
-        <h1 class="text-3xl font-bold">🌍 Assistente Migratório Humanitário</h1>
-        <p class="mt-2 text-sm">Vamos te ajudar com AMIZADE, clareza e caminhos possíveis!</p>
+        <h1 class="text-3xl font-bold">🌍 Assistente Migratório Humanitário (Beta)</h1>
+        <p class="mt-2 text-sm">Sua conversa direta para esclarecer dúvidas sobre imigração.</p>
     </header>
 
-    <main class="max-w-4xl mx-auto px-4 py-8 space-y-10">
+    <main class="max-w-xl mx-auto px-4 py-8 space-y-8">
 
-        <section>
-            <h2 class="text-xl font-semibold mb-4">1️⃣ Seu país de origem?</h2>
-            <select id="paisOrigem" class="w-full p-3 border rounded">
-                <option value="">– Escolha –</option>
-                <option value="Brasil">🇧🇷 Brasil</option>
-                <option value="China">🇨🇳 China</option>
-                <option value="India">🇮🇳 Índia</option>
-                <option value="Russia">🇷🇺 Rússia</option>
-                <option value="AfricaDoSul">🇿🇦 África do Sul</option>
-                <option value="Marrocos">🇲🇦 Marrocos</option>
-            </select>
-        </section>
-
-        <section>
-            <h2 class="text-xl font-semibold mb-4">2️⃣ Para qual país vai ou já está?</h2>
-            <select id="paisDestino" class="w-full p-3 border rounded">
-                <option value="">– Escolha –</option>
-                <option value="Brasil">🇧🇷 Brasil</option>
-                <option value="Schengen">🇪🇺 União Europeia (Schengen)</option>
-                <option value="Russia">🇷🇺 Rússia</option>
-                <option value="Marrocos">🇲🇦 Marrocos</option>
-                <option value="EUA">🇺🇸 Estados Unidos</option>
-                <option value="Canada">🇨🇦 Canadá</option>
-            </select>
-        </section>
-
-        <section>
-            <h2 class="text-xl font-semibold mb-4">3️⃣ O que busca?</h2>
-            <div id="opcoes" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                <button data-type="Visita">Visto de Visita</button>
-                <button data-type="Trabalho">Visto de Trabalho</button>
-                <button data-type="Temp">Residência Temporária</button>
-                <button data-type="Perm">Residência Permanente</button>
-                <button data-type="Refugio">Refúgio</button>
-                <button data-type="Anistia">Anistia</button>
+        <!-- Seção do Chatbot Gemini -->
+        <section class="bg-white p-6 rounded-lg shadow-lg border-t-4 border-blue-600">
+            <h2 class="text-2xl font-bold text-blue-800 mb-4 text-center">💬 Converse com nosso Assistente de IA!</h2>
+            
+            <div class="mb-6 text-center text-gray-700">
+                <p>Olá! Eu sou seu assistente migratório da Evoluzion.</p>
+                <p class="mt-1">Posso te ajudar a entender os passos iniciais e dar orientações gerais sobre processos migratórios.</p>
+                <p class="mt-2 font-semibold">Como posso te ajudar hoje?</p>
+                <p class="mt-2 text-sm text-gray-500">Você pode perguntar sobre: visto de turismo, trabalho, residência, refúgio, documentos necessários, etc.</p>
             </div>
-        </section>
 
-        <section id="resultadoContainer" class="hidden bg-yellow-50 p-6 rounded shadow-lg border-l-4 border-yellow-500">
-            <h2 class="text-2xl font-bold text-yellow-800 mb-4">📋 Seu Roteiro Migratório Humanitário</h2>
-            <p id="textoResultado" class="text-gray-800 text-base leading-relaxed"></p>
-            <div class="mt-8 text-center">
-                <a href="https://wa.me/5544984342756" target="_blank"
-                   class="inline-flex items-center bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-full font-semibold transition shadow-lg transform hover:scale-105">
-                    <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg>
-                    Fale com nosso especialista!
-                </a>
+            <div id="chatMessages" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <!-- Mensagens do chat aparecerão aqui -->
             </div>
-        </section>
 
-        <section class="mt-10 bg-blue-50 p-6 rounded shadow-lg border-l-4 border-blue-500">
-            <h2 class="text-2xl font-bold text-blue-800 mb-4">💬 Converse com nosso Assistente de IA!</h2>
-            <div id="chatMessages" class="bg-white p-4 rounded-lg h-64 overflow-y-auto mb-4 border border-gray-200 flex flex-col space-y-2">
-                <p class="text-gray-600 mb-2">Olá! Eu sou seu assistente migratório. Pergunte-me algo sobre seu processo. Você também pode preencher os campos acima para me dar mais contexto.</p>
-            </div>
-            <div class="flex">
+            <div class="flex mt-4">
                 <input type="text" id="chatInput" placeholder="Digite sua pergunta aqui..." class="flex-grow p-3 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 <button id="chatSendBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-r-lg font-semibold transition">Enviar</button>
             </div>
-            <p id="chatError" class="text-red-500 text-sm mt-2 hidden">Ocorreu um erro. Por favor, tente novamente.</p>
-            <p id="chatLoading" class="text-blue-500 text-sm mt-2 hidden">Digitando...</p>
+            <p id="chatError" class="text-red-500 text-sm mt-2 hidden">Ocorreu um erro ao conectar com o assistente. Por favor, tente novamente.</p>
+            <p id="chatLoading" class="text-blue-500 text-sm mt-2 hidden text-center">O assistente está digitando...</p>
         </section>
-        </main>
+        <!-- Fim da Seção do Chatbot Gemini -->
+
+        <section class="text-center mt-10">
+            <h3 class="text-xl font-semibold mb-4 text-gray-800">Precisa de Ajuda Humana e Especializada?</h3>
+            <a href="https://wa.me/5544984342756" target="_blank"
+               class="inline-flex items-center bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-full font-semibold transition shadow-lg transform hover:scale-105">
+                <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg>
+                Fale com nosso especialista!
+            </a>
+            <p class="mt-4 text-sm text-gray-600">Este assistente de IA oferece informações gerais e não substitui a consulta com um advogado de imigração.</p>
+        </section>
+
+    </main>
 
     <footer class="bg-gray-900 text-white text-center text-sm py-4 mt-10">
         Assistente humanitário – Evol.U.Zion 🌎
     </footer>
 
     <script>
-        let tipoEscolhido = '';
-        const paisOrigemSelect = document.getElementById('paisOrigem');
-        const paisDestinoSelect = document.getElementById('paisDestino');
-        const opcoesDiv = document.getElementById('opcoes');
-        const resultadoContainer = document.getElementById('resultadoContainer');
-        const textoResultado = document.getElementById('textoResultado');
-
-        // Novas referências para o chatbot
         const chatInput = document.getElementById('chatInput');
         const chatSendBtn = document.getElementById('chatSendBtn');
         const chatMessages = document.getElementById('chatMessages');
@@ -125,225 +102,49 @@
         // Certifique-se de que termina com /api/chat
         const GEMINI_BACKEND_URL = 'https://assistente-gemini-backend.vercel.app/api/chat'; 
 
+        // Adiciona uma mensagem inicial do assistente ao carregar
+        document.addEventListener('DOMContentLoaded', () => {
+            displayMessage('Olá! Eu sou seu assistente migratório da Evoluzion. Posso te ajudar a entender os passos iniciais e dar orientações gerais sobre processos migratórios. Como posso te ajudar hoje?', 'gemini');
+        });
 
-        // --- Base de Conhecimento (Dados do MVP) ---
-        // Mantenha seu objeto 'dadosPaises' e 'dadosVistos' aqui, como no código anterior
-        // Eu incluí eles aqui novamente para que o script seja completo, mas você já tinha isso.
-        const dadosPaises = {
-            Brasil: {
-                moeda: 'Real (R$)',
-                passaporte: {
-                    valor: 'R$ 257,25',
-                    link: 'https://www.gov.br/pt-br/servicos/obter-passaporte-comum-para-brasileiro',
-                    requisitos: 'Documento de identidade, CPF, título de eleitor, comprovante de quitação militar (homens).'
-                },
-                servicosComuns: {
-                    traducaoJuramentada: 'R$ 150 - R$ 300 por página (aprox.)',
-                    apostilamento: 'R$ 50 - R$ 150 por documento (aprox.)'
-                }
-            },
-            China: {
-                moeda: 'Yuan (CNY)',
-                passaporte: {
-                    valor: 'CNY 120 (~US$18)',
-                    link: 'https://www.fmprc.gov.cn/eng/', // Exemplo de link oficial
-                    requisitos: 'Identidade chinesa, fotos.'
-                },
-                servicosComuns: {
-                    traducaoJuramentada: 'CNY 200 - 500 por página',
-                    apostilamento: 'CNY 100 - 300 por documento'
-                }
-            },
-            India: {
-                moeda: 'Rúpia Indiana (₹)',
-                passaporte: {
-                    valor: '₹ 1 500 (normal) / ₹ 3 500 (urgência)',
-                    link: 'https://passportindia.gov.in/', // Exemplo de link oficial
-                    requisitos: 'Comprovante de endereço, prova de cidadania.'
-                },
-                servicosComuns: {
-                    traducaoJuramentada: '₹ 1000 - 2500 por página',
-                    apostilamento: '₹ 500 - 1500 por documento'
-                }
-            },
-            Russia: {
-                moeda: 'Rublo (RUB)',
-                passaporte: {
-                    valor: 'RUB 2000 (~US$25)',
-                    link: 'https://www.kdmid.ru/',
-                    requisitos: 'Documentos de identificação, fotos.'
-                },
-                servicosComuns: {
-                    traducaoJuramentada: 'RUB 1500 - 4000 por página',
-                    apostilamento: 'RUB 800 - 2500 por documento'
-                }
-            },
-            AfricaDoSul: {
-                moeda: 'Rand (ZAR)',
-                passaporte: {
-                    valor: 'US$ 67 (comum)', // Valor em USD para facilitar comparação
-                    link: 'https://www.gov.za/services/travel-and-tourism/passports-and-travel-documents', // Exemplo de link oficial
-                    requisitos: 'Identidade nacional, comprovante de residência.'
-                },
-                servicosComuns: {
-                    traducaoJuramentada: 'ZAR 300 - 700 por página',
-                    apostilamento: 'ZAR 150 - 400 por documento'
-                }
-            },
-            Marrocos: {
-                moeda: 'Dirham Marroquino (MAD)',
-                passaporte: {
-                    valor: 'MAD 300 (~US$30)',
-                    link: 'https://www.maec.gov.ma/fr', // Exemplo de link oficial
-                    requisitos: 'Cartão de identificação nacional, fotos.'
-                },
-                servicosComuns: {
-                    traducaoJuramentada: 'MAD 200 - 500 por página',
-                    apostilamento: 'MAD 100 - 250 por documento'
-                }
-            },
-            Schengen: { // União Europeia (Schengen) - dados gerais
-                moeda: 'Euro (€)',
-                passaporte: { valor: 'Consultar consulado do país de destino na UE' },
-                servicosComuns: {
-                    traducaoJuramentada: '€ 30 - € 80 por página (varia por país/idioma)',
-                    apostilamento: '€ 20 - € 50 por documento (varia por país)'
-                }
-            },
-            EUA: {
-                moeda: 'Dólar (US$)',
-                passaporte: { valor: 'Consultar consulado do país de destino' },
-                servicosComuns: {
-                    traducaoJuramentada: 'US$ 20 - US$ 50 por página',
-                    apostilamento: 'US$ 10 - US$ 20 por documento'
-                }
-            },
-            Canada: {
-                moeda: 'Dólar Canadense (CAD)',
-                passaporte: { valor: 'Consultar consulado do país de destino' },
-                servicosComuns: {
-                    traducaoJuramentada: 'CAD 25 - CAD 75 por página',
-                    apostilamento: 'CAD 10 - CAD 30 por documento'
-                }
-            }
-        };
-
-        const dadosVistos = {
-            Marrocos: {
-                Visita: {
-                    info: 'Visto dispensado para a maioria das nacionalidades para estadias de até 90 dias. É necessário passaporte válido por no mínimo 6 meses.',
-                    orgao: 'Entrada pelo controle de fronteiras marroquino',
-                    custoTaxa: 'N/A',
-                    documentos: 'Passaporte, passagem de retorno, comprovação de meios financeiros.',
-                    link: 'https://www.diplomatie.ma/'
-                },
-                Trabalho: { // Exemplo mais detalhado
-                    info: 'Exige oferta de trabalho de empregador marroquino e autorização de trabalho emitida pelas autoridades marroquinas. Processo complexo.',
-                    orgao: 'Ministério do Emprego e Assuntos Sociais de Marrocos; Consulado/Embaixada de Marrocos em seu país de origem.',
-                    custoTaxa: 'MAD 500 - MAD 1000 (taxas governamentais, pode variar)',
-                    documentos: 'Contrato de trabalho, diploma(s), certidões, antecedentes criminais, passaporte.',
-                    link: 'https://www.diplomatie.ma/'
-                }
-            },
-            Schengen: {
-                Visita: {
-                    info: 'Visto Schengen para turismo. Permite estadia de até 90 dias em um período de 180 dias. Solicitar no consulado do país de entrada ou de maior permanência.',
-                    orgao: 'Consulado/Embaixada do país membro Schengen de destino em seu país de origem.',
-                    custoTaxa: '€ 90 (adultos) / € 45 (crianças 6-12 anos)',
-                    documentos: 'Passaporte válido, formulário de visto, foto, seguro viagem (mín. € 30.000 cobertura), comprovação de meios financeiros, reserva de hotel/carta convite, passagem aérea.',
-                    link: 'https://brasil.diplo.de/br-pt/servicos/vistos/schengen/schengen-2610370'
-                },
-                Trabalho: {
-                    info: 'Cada país da União Europeia tem regras específicas para vistos de trabalho. Geralmente exige oferta de emprego e autorização.',
-                    orgao: 'Consulado/Embaixada do país específico da UE.',
-                    custoTaxa: 'Varia por país (€ 70 - € 150 ou mais)',
-                    documentos: 'Contrato de trabalho, qualificações, antecedentes criminais, seguro saúde.',
-                    link: 'https://ec.europa.eu/home-affairs/policies/migration-and-asylum/legal-migration-and-integration/work-visas_en'
-                }
-            },
-            EUA: {
-                Visita: {
-                    info: 'Visto de Não-Imigrante B1/B2 (Negócios/Turismo). Necessário entrevista consular.',
-                    orgao: 'Embaixada/Consulados dos EUA em seu país de origem.',
-                    custoTaxa: 'US$ 185 (taxa MRV)',
-                    documentos: 'Passaporte válido (mín. 6 meses após a data pretendida de estadia), formulário DS-160, comprovante de meios financeiros, vínculos com país de origem.',
-                    link: 'https://ceac.state.gov/genniv/'
-                },
-                Trabalho: {
-                    info: 'Diversos tipos de visto de trabalho (H1B, L1, O1 etc.), cada um com requisitos específicos e complexos, geralmente exigindo petição aprovada pelo empregador nos EUA.',
-                    orgao: 'USCIS (Serviços de Cidadania e Imigração dos EUA) e Embaixada/Consulados dos EUA.',
-                    custoTaxa: 'US$ 185 (taxa MRV do visto) + taxas de petição (US$ 460 - US$ 4.000+ dependendo do visto)',
-                    documentos: 'Petição aprovada, qualificação profissional, antecedentes criminais.',
-                    link: 'https://www.uscis.gov/working-in-the-united-states'
-                }
-            },
-            Canada: {
-                Visita: {
-                    info: 'Visto de Visitante (Temporary Resident Visa - TRV) ou eTA (Autorização Eletrônica de Viagem) para cidadãos elegíveis. Pedido online.',
-                    orgao: 'Immigration, Refugees and Citizenship Canada (IRCC) - online.',
-                    custoTaxa: 'CAD 100 por pessoa (TRV) / CAD 7 (eTA)',
-                    documentos: 'Passaporte válido, formulário online, comprovante de meios financeiros, passagem de retorno, carta convite (se aplicável).',
-                    link: 'https://www.canada.ca/en/immigration-refugees-citizenship/services/visit-canada.html'
-                },
-                Refugio: {
-                    info: 'Processo de solicitação de Refúgio. Exige que a pessoa tenha uma base para o pedido de proteção.',
-                    orgao: 'Immigration, Refugees and Citizenship Canada (IRCC) e Conselho de Imigração e Refúgio do Canadá (IRB).',
-                    custoTaxa: 'Geralmente não há taxa para o pedido de refúgio em si, mas pode haver custos com documentos e serviços jurídicos.',
-                    documentos: 'Formulário de solicitação, documentos de identificação, provas que justifiquem o medo de perseguição no país de origem.',
-                    link: 'https://www.canada.ca/en/immigration-refugees-citizenship/services/refugees/claim-canada.html'
-                }
-            },
-            Brasil: {
-                Refugio: {
-                    info: 'Processo de solicitação de refúgio no Brasil. Conforme a Lei nº 9.474/1997.',
-                    orgao: 'Polícia Federal (PF) - Unidade de Protocolo; Comitê Nacional para os Refugiados (CONARE) – Ministério da Justiça.',
-                    custoTaxa: 'Não há taxa para o pedido de refúgio.',
-                    documentos: 'Documento de identificação (se possuir), formulário de solicitação preenchido, relatos e provas dos motivos do pedido de refúgio.',
-                    link: 'https://www.gov.br/mj/pt-br/assuntos/seus-direitos/refugio'
-                },
-                Perm: {
-                    info: 'Residência Permanente no Brasil (por reunião familiar, investimento, aposentadoria etc.).',
-                    orgao: 'Polícia Federal (PF); Ministério da Justiça e Segurança Pública.',
-                    custoTaxa: 'Taxas para emissão de Carteira de Registro Nacional Migratório (CRNM) e taxa de processamento de pedido.',
-                    documentos: 'Passaporte, certidões, antecedentes criminais, comprovantes de meios de subsistência, formulários específicos.',
-                    link: 'https://www.gov.br/pt-br/servicos/obter-autorizacao-de-residencia-para-imigrantes'
-                }
-            }
-        };
-
-        // --- Funções de Lógica ---
-
+        /**
+         * Adiciona uma mensagem ao histórico do chat.
+         * @param {string} message - O texto da mensagem.
+         * @param {string} sender - O remetente da mensagem ('user', 'gemini', 'error').
+         */
         function displayMessage(message, sender) {
-            const messageElement = document.createElement('div'); // Mudado para div para melhor controle de layout
-            messageElement.classList.add('p-3', 'rounded-lg', 'max-w-[80%]');
+            const messageElement = document.createElement('div');
+            // Adiciona classes base para todas as mensagens
+            messageElement.classList.add('p-3', 'rounded-lg', 'max-w-[85%]', 'break-words'); 
+
             if (sender === 'user') {
-                messageElement.classList.add('bg-blue-100', 'self-end', 'ml-auto', 'text-right');
-                messageElement.innerHTML = `<strong>Você:</strong> ${message}`;
+                messageElement.classList.add('user-message');
+                messageElement.innerHTML = `<strong class="font-medium">Você:</strong> ${message}`;
             } else if (sender === 'gemini') {
-                messageElement.classList.add('bg-gray-100', 'mr-auto', 'text-left');
-                messageElement.innerHTML = `<strong>Assistente:</strong> ${message}`;
+                messageElement.classList.add('gemini-message');
+                messageElement.innerHTML = `<strong class="font-medium">Assistente:</strong> ${message}`;
             } else if (sender === 'error') {
-                messageElement.classList.add('bg-red-100', 'text-red-800', 'mr-auto', 'text-left');
-                messageElement.innerHTML = `<strong>Erro:</strong> ${message}`;
+                messageElement.classList.add('error-message');
+                messageElement.innerHTML = `<strong class="font-medium">Erro:</strong> ${message}`;
             }
             chatMessages.appendChild(messageElement);
-            chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll para o final
+            // Rola para o final do chat para mostrar a nova mensagem
+            chatMessages.scrollTop = chatMessages.scrollHeight; 
         }
 
+        /**
+         * Envia a mensagem do usuário para o backend do Gemini e exibe a resposta.
+         */
         async function sendChatMessage() {
             const userMessage = chatInput.value.trim();
-            if (!userMessage) return;
+            if (!userMessage) return; // Não envia mensagem vazia
 
-            displayMessage(userMessage, 'user');
-            chatInput.value = '';
-            chatInput.disabled = true;
+            displayMessage(userMessage, 'user'); // Exibe a mensagem do usuário
+            chatInput.value = ''; // Limpa o input
+            chatInput.disabled = true; // Desabilita input e botão enquanto espera resposta
             chatSendBtn.disabled = true;
-            chatLoading.classList.remove('hidden');
-            chatError.classList.add('hidden');
-
-            const paisOrigem = paisOrigemSelect.value;
-            const paisDestino = paisDestinoSelect.value;
-            const tipoServico = tipoEscolhido; // Pega o tipo de serviço selecionado pelos botões
+            chatLoading.classList.remove('hidden'); // Mostra "Digitando..."
+            chatError.classList.add('hidden'); // Esconde mensagens de erro anteriores
 
             try {
                 const response = await fetch(GEMINI_BACKEND_URL, {
@@ -351,11 +152,9 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
+                    // Envia apenas a mensagem do usuário para o backend simplificado
                     body: JSON.stringify({
-                        message: userMessage,
-                        paisOrigem: paisOrigem,
-                        paisDestino: paisDestino,
-                        tipoServico: tipoServico
+                        message: userMessage
                     })
                 });
 
@@ -365,141 +164,28 @@
                 }
 
                 const data = await response.json();
-                displayMessage(data.reply, 'gemini');
+                displayMessage(data.reply, 'gemini'); // Exibe a resposta do Gemini
 
             } catch (error) {
                 console.error('Erro ao comunicar com o chatbot:', error);
-                chatError.textContent = `Ocorreu um erro: ${error.message}. Por favor, tente novamente.`;
+                chatError.textContent = `Não foi possível obter uma resposta do assistente. (${error.message})`;
                 chatError.classList.remove('hidden');
-                displayMessage('Não foi possível obter uma resposta do assistente.', 'error');
+                displayMessage('Desculpe, não consegui processar sua solicitação agora. Por favor, tente novamente.', 'error');
             } finally {
+                // Reabilita input e botão e esconde indicadores de status
                 chatInput.disabled = false;
                 chatSendBtn.disabled = false;
-                chatLoading.classList.add('hidden');
-                chatInput.focus();
+                chatLoading.classList.add('hidden'); 
+                chatInput.focus(); // Retorna o foco para o input
             }
         }
 
-        // Função para selecionar o tipo de serviço e atualizar a interface
-        function selecionarTipo(event) {
-            const clickedButton = event.target;
-            // Remover 'selected' de todos os botões
-            document.querySelectorAll('#opcoes button').forEach(btn => {
-                btn.classList.remove('selected');
-            });
-            // Adicionar 'selected' ao botão clicado
-            clickedButton.classList.add('selected');
-            tipoEscolhido = clickedButton.dataset.type; // Pega o valor do atributo data-type
-            montarResultado(); // Chama a função para montar o resultado
-        }
-
-        // Função principal para montar o resultado
-        function montarResultado() {
-            const paisOrigem = paisOrigemSelect.value;
-            const paisDestino = paisDestinoSelect.value;
-
-            // Só gera o resultado se os 3 campos principais estiverem preenchidos
-            if (!paisOrigem || !paisDestino || !tipoEscolhido) {
-                resultadoContainer.classList.add('hidden'); // Esconde o resultado se incompleto
-                return;
-            }
-
-            let msg = ``;
-            let custoTotalEstimado = 0;
-
-            msg += `✨ **Informações para você:**\n\n`;
-            msg += `🌎 **Seu caminho:** De **${paisOrigem}** para **${paisDestino}**, buscando **${tipoEscolhido}**.\n\n`;
-
-            // --- Dados do País de Origem (Passaporte) ---
-            const infoOrigem = dadosPaises[paisOrigem];
-            if (infoOrigem && infoOrigem.passaporte) {
-                msg += `--- Passaporte em **${paisOrigem}** ---\n`;
-                msg += `📝 **Custo estimado:** ${infoOrigem.passaporte.valor}\n`;
-                msg += `✅ **Requisitos comuns:** ${infoOrigem.passaporte.requisitos || 'Consultar órgão oficial.'}\n`;
-                msg += `🔗 **Link oficial:** ${infoOrigem.passaporte.link || 'N/A'}\n\n`;
-                // Tenta adicionar o custo do passaporte ao total, se for numérico
-                const valorPassaporte = parseFloat(String(infoOrigem.passaporte.valor).replace(/[^\d,.]/g, '').replace(',', '.'));
-                if (!isNaN(valorPassaporte)) {
-                    custoTotalEstimado += valorPassaporte;
-                }
-            } else {
-                msg += `--- Informações de passaporte para ${paisOrigem} não disponíveis ou não aplicáveis. ---\n\n`;
-            }
-
-            // --- Dados do Visto/Residência no País de Destino ---
-            const infoVisto = dadosVistos[paisDestino] && dadosVistos[paisDestino][tipoEscolhido];
-            if (infoVisto) {
-                msg += `--- Detalhes para **${tipoEscolhido}** em **${paisDestino}** ---\n`;
-                msg += `💡 **Tipo de processo:** ${infoVisto.info}\n`;
-                msg += `🏛️ **Órgão(s) responsável(is):** ${infoVisto.orgao}\n`;
-                msg += `💰 **Custo da taxa oficial:** ${infoVisto.custoTaxa}\n`;
-                msg += `📄 **Documentos e requisitos principais:** ${infoVisto.documentos}\n`;
-                msg += `🔗 **Link oficial:** ${infoVisto.link || 'N/A'}\n\n`;
-                // Tenta adicionar o custo da taxa oficial ao total
-                const valorVisto = parseFloat(String(infoVisto.custoTaxa).replace(/[^\d,.]/g, '').replace(',', '.'));
-                if (!isNaN(valorVisto)) {
-                    custoTotalEstimado += valorVisto;
-                }
-            } else if (paisDestino === 'Marrocos' && tipoEscolhido === 'Visita') {
-                msg += `--- Detalhes para **${tipoEscolhido}** em **${paisDestino}** ---\n`;
-                msg += `💡 **Visto:** Não exigido para a maioria das nacionalidades para estadias de até 90 dias. Apenas passaporte válido.\n`;
-                msg += `🔗 **Link oficial:** https://www.diplomatie.ma/\n\n`;
-            } else {
-                msg += `--- Informações para **${tipoEscolhido}** em **${paisDestino}** ---\n`;
-                msg += `💡 **Informação:** Para este tipo de serviço e país, por favor, **consulte diretamente o consulado ou embaixada** do ${paisDestino} em seu país de origem para detalhes específicos, documentos e taxas. As regras variam muito!\n`;
-                msg += `🔎 Recomendamos buscar a representação diplomática de ${paisDestino} no ${paisOrigem}.\n\n`;
-            }
-
-            // --- Custos de Serviços Terceirizados ---
-            const servicosTerceirizados = dadosPaises[paisOrigem]?.servicosComuns || dadosPaises[paisDestino]?.servicosComuns;
-            if (servicosTerceirizados) {
-                msg += `--- Custos Adicionais Estimados (Terceiros) ---\n`;
-                msg += `⚖️ **Tradução Juramentada:** ${servicosTerceirizados.traducaoJuramentada || 'Consultar tradutor juramentado'}\n`;
-                msg += `📜 **Apostilamento (Haia):** ${servicosTerceirizados.apostilamento || 'Consultar cartório ou órgão competente'}\n`;
-                msg += `👨‍⚖️ **Assessoria Jurídica/Advogado:** Recomendado para processos complexos (visto de trabalho, residência, refúgio). Custos variam de acordo com o profissional e complexidade do caso (Ex: R$ 5.000 - R$ 20.000+ no Brasil para processos de residência, ou US$ 1.000 - US$ 10.000+ nos EUA).\n\n`;
-            } else {
-                 msg += `--- Custos Adicionais Estimados (Terceiros) ---\n`;
-                 msg += `⚖️ **Tradução Juramentada:** Custos variam bastante. Pesquise por tradutores juramentados em seu país/idioma.\n`;
-                 msg += `📜 **Apostilamento (Haia):** Necessário para validar documentos no exterior. Consulte cartórios ou órgãos competentes no país emissor do documento.\n`;
-                 msg += `👨‍⚖️ **Assessoria Jurídica/Advogado:** Altamente recomendado para processos complexos, como vistos de trabalho, residência, refúgio ou anistia. Os custos variam muito conforme o profissional e a complexidade do caso.\n\n`;
-            }
-
-
-            // --- Custo Total e Observações Finais ---
-            const moedaFinal = dadosPaises[paisDestino]?.moeda || 'Moeda local';
-            msg += `--- Resumo dos Custos (Estimativa) ---\n`;
-            msg += `💸 **Custo total estimado (taxas oficiais):** ${moedaFinal} ${custoTotalEstimado.toFixed(2).replace('.', ',')}\n`;
-            msg += `*(Este valor não inclui passagens, seguro viagem, moradia, ou serviços de terceiros como advogados/tradutores. É uma estimativa das taxas governamentais principais.)*\n\n`;
-
-            msg += `📌 **Observações Importantes:**\n`;
-            msg += `* Preferencialmente online (site oficial) ou presencial conforme consulado/órgão.\n`;
-            msg += `* As informações podem mudar. Sempre consulte os **links oficiais** fornecidos.\n`;
-            msg += `* **Este assistente não substitui uma consulta com um advogado de imigração.** Ele fornece um roteiro inicial, mas cada caso é único e pode exigir análise e acompanhamento profissional para garantir segurança e sucesso no processo.\n\n`;
-            msg += `🚀 Com apoio humano, há chances mais rápidas e seguras para seu processo.`;
-
-            textoResultado.innerText = msg;
-            resultadoContainer.classList.remove('hidden');
-            resultadoContainer.scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // --- Event Listeners para acionar montarResultado ---
-        paisOrigemSelect.addEventListener('change', montarResultado);
-        paisDestinoSelect.addEventListener('change', montarResultado);
-        opcoesDiv.addEventListener('click', selecionarTipo); 
-
-        // Event Listeners para o chat Gemini (ADICIONADOS AQUI)
+        // Event Listeners para o envio de mensagens
         chatSendBtn.addEventListener('click', sendChatMessage);
         chatInput.addEventListener('keypress', (event) => {
             if (event.key === 'Enter') {
                 sendChatMessage();
             }
-        });
-
-        // Inicializa o estado dos botões ao carregar a página
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('#opcoes button').forEach(btn => {
-                btn.classList.remove('selected');
-            });
         });
     </script>
 </body>
