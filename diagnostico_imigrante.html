@@ -3,104 +3,140 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Assistente Migratório - Direitos e Caminhos Internacionais</title>
+  <title>Assistente Migratório Humanitário – Evoluzion</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    .flag {
-      width: 24px;
-      height: 16px;
-      display: inline-block;
-      margin-right: 8px;
-      vertical-align: middle;
-    }
+    .flag { width: 24px; height: 16px; margin-right: 8px; vertical-align: middle; }
+    button.selected { background-color: #fde047; }
   </style>
 </head>
 <body class="bg-gray-100 text-gray-900">
 
   <header class="bg-gray-800 text-white py-6 text-center shadow-md">
     <h1 class="text-3xl font-bold">🌍 Assistente Migratório Humanitário</h1>
-    <p class="mt-2 text-sm">Seja bem-vindo! Vamos te ajudar com clareza, verdade e caminhos possíveis.</p>
+    <p class="mt-2 text-sm">Vamos te ajudar com AMIZADE, clareza e caminhos possíveis!</p>
   </header>
 
   <main class="max-w-4xl mx-auto px-4 py-8 space-y-10">
 
+    <!-- 1: Origem -->
     <section>
-      <h2 class="text-xl font-semibold mb-4">1️⃣ Qual o seu país de origem?</h2>
-      <select class="w-full p-3 border rounded">
-        <option>🇧🇷 Brasil (Português)</option>
-        <option>🇨🇳 中国 (China - 中文)</option>
-        <option>🇮🇳 भारत (Índia - हिंदी)</option>
-        <option>🇿🇦 South Africa (English)</option>
-        <option>🇷🇺 Россия (Russia - Русский)</option>
-        <option>🇲🇦 المغرب‎ (Marrocos - العربية)</option>
-        <option>🇪🇺 União Europeia (vários países)</option>
-        <option>🇺🇸 United States</option>
-        <option>🇨🇦 Canada</option>
+      <h2 class="text-xl font-semibold mb-4">1️⃣ Seu país de origem?</h2>
+      <select id="paisOrigem" class="w-full p-3 border rounded">
+        <option value="">– Escolha –</option>
+        <option value="Brasil">🇧🇷 Brasil</option>
+        <option value="China">🇨🇳 China</option>
+        <option value="India">🇮🇳 Índia</option>
+        <option value="Russia">🇷🇺 Rússia</option>
+        <option value="AfricaDoSul">🇿🇦 África do Sul</option>
+        <option value="Marrocos">🇲🇦 Marrocos</option>
       </select>
     </section>
 
+    <!-- 2: Destino -->
     <section>
-      <h2 class="text-xl font-semibold mb-4">2️⃣ Para qual país você deseja ir ou já está?</h2>
-      <select class="w-full p-3 border rounded">
-        <option>🇧🇷 Brasil</option>
-        <option>🇪🇺 União Europeia (zona Schengen)</option>
-        <option>🇨🇳 China</option>
-        <option>🇮🇳 Índia</option>
-        <option>🇿🇦 África do Sul</option>
-        <option>🇷🇺 Rússia</option>
-        <option>🇲🇦 Marrocos</option>
-        <option>🇺🇸 Estados Unidos</option>
-        <option>🇨🇦 Canadá</option>
+      <h2 class="text-xl font-semibold mb-4">2️⃣ Para qual país vai ou já está?</h2>
+      <select id="paisDestino" class="w-full p-3 border rounded">
+        <option value="">– Escolha –</option>
+        <option value="Brasil">🇧🇷 Brasil</option>
+        <option value="Schengen">🇪🇺 União Europeia (Schengen)</option>
+        <option value="Russia">🇷🇺 Rússia</option>
+        <option value="Marrocos">🇲🇦 Marrocos</option>
+        <option value="EUA">🇺🇸 Estados Unidos</option>
+        <option value="Canada">🇨🇦 Canadá</option>
       </select>
     </section>
 
+    <!-- 3: Tipo de serviço -->
     <section>
-      <h2 class="text-xl font-semibold mb-4">3️⃣ O que você busca?</h2>
-      <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-        <button class="bg-blue-100 p-4 rounded shadow hover:bg-blue-200">Visto de Visita</button>
-        <button class="bg-blue-100 p-4 rounded shadow hover:bg-blue-200">Trabalho</button>
-        <button class="bg-blue-100 p-4 rounded shadow hover:bg-blue-200">Residência Temporária</button>
-        <button class="bg-blue-100 p-4 rounded shadow hover:bg-blue-200">Residência Permanente</button>
-        <button class="bg-blue-100 p-4 rounded shadow hover:bg-blue-200">Refúgio</button>
-        <button class="bg-blue-100 p-4 rounded shadow hover:bg-blue-200">Anistia</button>
+      <h2 class="text-xl font-semibold mb-4">3️⃣ O que busca?</h2>
+      <div id="opcoes" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        <button onclick="selecionarTipo(this,'Visita')">Visto de Visita</button>
+        <button onclick="selecionarTipo(this,'Trabalho')">Visto de Trabalho</button>
+        <button onclick="selecionarTipo(this,'Temp')">Residência Temporária</button>
+        <button onclick="selecionarTipo(this,'Perm')">Residência Permanente</button>
+        <button onclick="selecionarTipo(this,'Refugio')">Refúgio</button>
+        <button onclick="selecionarTipo(this,'Anistia')">Anistia</button>
       </div>
     </section>
 
-    <section>
-      <h2 class="text-xl font-semibold mb-4">4️⃣ Informações Essenciais</h2>
-      <p class="mb-4">Aqui estão os principais documentos e custos que você precisa conhecer, com links oficiais para conferência:</p>
-      <ul class="space-y-4 text-sm">
-        <li><strong>📄 Passaporte Brasil:</strong> R$ 257,25 — Emitido pela Polícia Federal. <a href="https://www.gov.br/pt-br/servicos/obter-passaporte-comum-para-brasileiro" class="text-blue-600 underline" target="_blank">Link oficial</a></li>
-        <li><strong>🎫 Visto União Europeia:</strong> €90 adultos, €45 crianças — Solicite em embaixadas ou consulados. <a href="https://brasil.diplo.de/br-pt/servicos/vistos/schengen/schengen-2610370" class="text-blue-600 underline" target="_blank">Link oficial</a></li>
-        <li><strong>💵 Visto EUA:</strong> US$ 160 (visita) a US$ 435 (imigração) — Agendamento via sistema DS-160. <a href="https://ceac.state.gov/CEAC" class="text-blue-600 underline" target="_blank">Site oficial</a></li>
-        <li><strong>🇨🇦 Visto Canadá:</strong> CAD 150 — Solicite no site oficial. <a href="https://www.canada.ca/en/immigration-refugees-citizenship/services/visit-canada.html" class="text-blue-600 underline" target="_blank">Link oficial</a></li>
-        <li><strong>🇲🇦 Marrocos:</strong> Brasileiros não precisam de visto por até 90 dias. <a href="https://www.diplomatie.ma/" class="text-blue-600 underline" target="_blank">Ministério das Relações Exteriores</a></li>
-      </ul>
-    </section>
-
-    <section class="bg-green-100 p-6 rounded shadow-md">
-      <h2 class="text-lg font-semibold mb-2">✅ Etapas simplificadas</h2>
-      <ol class="list-decimal list-inside space-y-2 text-sm">
-        <li>Verifique se você precisa de visto</li>
-        <li>Solicite o passaporte no seu país</li>
-        <li>Acesse o site oficial do país de destino</li>
-        <li>Junte os documentos exigidos</li>
-        <li>Agende sua entrevista (se necessário)</li>
-        <li>Faça o pagamento no sistema oficial</li>
-        <li>Espere pela aprovação e acompanhe online</li>
-      </ol>
-    </section>
-
-    <section class="text-center mt-8">
-      <p class="text-lg font-medium">📲 Fale com um especialista para encurtar caminhos com segurança:</p>
-      <a href="https://wa.me/5544984342756" target="_blank" class="inline-block mt-4 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full font-semibold transition">Converse via WhatsApp</a>
+    <!-- 4: Resultado -->
+    <section id="resultado" class="hidden bg-green-50 p-6 rounded shadow">
+      <h2 class="text-lg font-semibold mb-4">📋 Resultado para você</h2>
+      <p id="textoResultado" class="whitespace-pre-line text-sm"></p>
+      <div class="mt-6 text-center">
+        <a href="https://wa.me/5544984342756" target="_blank"
+           class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full font-semibold transition">
+          Converse com especialista
+        </a>
+      </div>
     </section>
 
   </main>
 
   <footer class="bg-gray-900 text-white text-center text-sm py-4">
-    Projeto humanitário da Evol.U.Zion · Direitos para todos os povos 🌎
+    Assistente humanitário – Evol.U.Zion 🌎
   </footer>
 
+  <script>
+    let tipoEscolhido = '';
+    const dados = {
+      Brasil:     { passaporte: { valor:'R$ 257,25', link:'https://www.gov.br/pt-br/servicos/obter-passaporte-comum-para-brasileiro' } },
+      China:      { passaporte: { valor:'CNY 120 (~US$18)', link:'http://' } },
+      India:      { passaporte: { valor:'₹ 1 500 (36p) /₹ 3 500 urgência', link:'http://' } },
+      Russia:     { passaporte: { valor:'RUB 2000 (~US$25)', link:'https://www.kdmid.ru/' } },
+      AfricaDoSul:{ passaporte: { valor:'US$ 67 (comum)', link:'http://' } },
+      Marrocos:   {passaporte:'— visto não exigido até 90 dias'},
+    };
+    const vistos = {
+      Marrocos: { Visita:'Dispensado p/ até 90 dias – presencial', link:'https://www.diplomatie.ma/' },
+      Schengen: { Visita:'€ 90 adultos / € 45 crianças – consulado', link:'https://brasil.diplo.de/br-pt/servicos/vistos/schengen/schengen-2610370' },
+      EUA:      { Visita:'US$ 185 (B1/B2)', link:'https://ceac.state.gov/' },
+      Canada:   { Visita:'CAD 100 por pessoa – online', link:'https://www.canada.ca/en/immigration-refugees-citizenship/services/visit-canada.html' },
+      Russia:   { Visita:'RUB 2700 (~US$30) – consulado', link:'https://visa.kdmid.ru/' },
+    };
+
+    function selecionarTipo(btn, tipo){
+      if(tipoEscolhido) return;
+      tipoEscolhido = tipo;
+      btn.classList.add('selected');
+      montarResultado();
+    }
+
+    function montarResultado(){
+      const o = document.getElementById('paisOrigem').value;
+      const d = document.getElementById('paisDestino').value;
+      if(!o||!d||!tipoEscolhido)return;
+
+      let msg = `Origem: ${o}\nDestino: ${d}\nServiço: ${tipoEscolhido}\n\n`;
+
+      // origem
+      const po = dados[o];
+      msg += `📋 Passaporte (${o}): ${po.passaporte.valor}\nLink: ${po.passaporte.link}\n\n`;
+
+      // visto
+      if(vistos[d] && vistos[d][tipoEscolhido]){
+        const v = vistos[d][tipoEscolhido];
+        msg += `🎯 Visto (${tipoEscolhido}) para ${d}: ${v} \nLink: ${v.link}\n\n`;
+      } else if(d==='Marrocos'){
+        msg += `🎯 Visto: Não exigido até 90 dias\n`;
+      } else {
+        msg += `🎯 Consulte o consulado para detalhes específicos\n`;
+      }
+
+      msg += `💰 Moeda utilizada: ${
+        d==='Brasil'?'Real (R$)': d==='Schengen'?'Euro (€)': d==='EUA'?'Dólar (US$)': 
+        d==='Canada'?'Dólar Canadense (CAD)': d==='Russia'?'Rublo (RUB)':'Moeda local'
+      }\n\n`;
+
+      msg += `📌 Preferencialmente online (site oficial) ou presencial conforme consulado.\n`;
+
+      msg += `🚀 Com apoio humano, há chances mais rápidas e seguras para seu processo.`;
+
+      document.getElementById('textoResultado').innerText = msg;
+      document.getElementById('resultado').classList.remove('hidden');
+      document.getElementById('resultado').scrollIntoView({behavior:'smooth'});
+    }
+  </script>
 </body>
 </html>
