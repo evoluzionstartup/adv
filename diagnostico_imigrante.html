@@ -88,22 +88,47 @@
             </div>
         </section>
 
-    </main>
+        <section class="mt-10 bg-blue-50 p-6 rounded shadow-lg border-l-4 border-blue-500">
+            <h2 class="text-2xl font-bold text-blue-800 mb-4">💬 Converse com nosso Assistente de IA!</h2>
+            <div id="chatMessages" class="bg-white p-4 rounded-lg h-64 overflow-y-auto mb-4 border border-gray-200 flex flex-col space-y-2">
+                <p class="text-gray-600 mb-2">Olá! Eu sou seu assistente migratório. Pergunte-me algo sobre seu processo. Você também pode preencher os campos acima para me dar mais contexto.</p>
+            </div>
+            <div class="flex">
+                <input type="text" id="chatInput" placeholder="Digite sua pergunta aqui..." class="flex-grow p-3 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <button id="chatSendBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-r-lg font-semibold transition">Enviar</button>
+            </div>
+            <p id="chatError" class="text-red-500 text-sm mt-2 hidden">Ocorreu um erro. Por favor, tente novamente.</p>
+            <p id="chatLoading" class="text-blue-500 text-sm mt-2 hidden">Digitando...</p>
+        </section>
+        </main>
 
     <footer class="bg-gray-900 text-white text-center text-sm py-4 mt-10">
         Assistente humanitário – Evol.U.Zion 🌎
     </footer>
 
     <script>
-        let tipoEscolhido = ''; // Variável para armazenar o tipo de serviço selecionado
+        let tipoEscolhido = '';
         const paisOrigemSelect = document.getElementById('paisOrigem');
         const paisDestinoSelect = document.getElementById('paisDestino');
         const opcoesDiv = document.getElementById('opcoes');
         const resultadoContainer = document.getElementById('resultadoContainer');
         const textoResultado = document.getElementById('textoResultado');
 
+        // Novas referências para o chatbot
+        const chatInput = document.getElementById('chatInput');
+        const chatSendBtn = document.getElementById('chatSendBtn');
+        const chatMessages = document.getElementById('chatMessages');
+        const chatError = document.getElementById('chatError');
+        const chatLoading = document.getElementById('chatLoading');
+
+        // --- IMPORTANTE: SUBSTITUA ESTE URL PELO SEU ENDPOINT REAL DO VERCEL FUNCTIONS ---
+        // Certifique-se de que termina com /api/chat
+        const GEMINI_BACKEND_URL = 'https://assistente-gemini-backend.vercel.app/api/chat'; 
+
+
         // --- Base de Conhecimento (Dados do MVP) ---
-        // ESTES SÃO EXEMPLOS! PRECISE SER COMPLETA E VALIDADA.
+        // Mantenha seu objeto 'dadosPaises' e 'dadosVistos' aqui, como no código anterior
+        // Eu incluí eles aqui novamente para que o script seja completo, mas você já tinha isso.
         const dadosPaises = {
             Brasil: {
                 moeda: 'Real (R$)',
@@ -121,7 +146,7 @@
                 moeda: 'Yuan (CNY)',
                 passaporte: {
                     valor: 'CNY 120 (~US$18)',
-                    link: 'http://', // SUBSTITUIR POR LINK OFICIAL
+                    link: 'https://www.fmprc.gov.cn/eng/', // Exemplo de link oficial
                     requisitos: 'Identidade chinesa, fotos.'
                 },
                 servicosComuns: {
@@ -133,7 +158,7 @@
                 moeda: 'Rúpia Indiana (₹)',
                 passaporte: {
                     valor: '₹ 1 500 (normal) / ₹ 3 500 (urgência)',
-                    link: 'http://', // SUBSTITUIR POR LINK OFICIAL
+                    link: 'https://passportindia.gov.in/', // Exemplo de link oficial
                     requisitos: 'Comprovante de endereço, prova de cidadania.'
                 },
                 servicosComuns: {
@@ -157,7 +182,7 @@
                 moeda: 'Rand (ZAR)',
                 passaporte: {
                     valor: 'US$ 67 (comum)', // Valor em USD para facilitar comparação
-                    link: 'http://', // SUBSTITUIR POR LINK OFICIAL
+                    link: 'https://www.gov.za/services/travel-and-tourism/passports-and-travel-documents', // Exemplo de link oficial
                     requisitos: 'Identidade nacional, comprovante de residência.'
                 },
                 servicosComuns: {
@@ -169,7 +194,7 @@
                 moeda: 'Dirham Marroquino (MAD)',
                 passaporte: {
                     valor: 'MAD 300 (~US$30)',
-                    link: 'http://', // SUBSTITUIR POR LINK OFICIAL
+                    link: 'https://www.maec.gov.ma/fr', // Exemplo de link oficial
                     requisitos: 'Cartão de identificação nacional, fotos.'
                 },
                 servicosComuns: {
@@ -268,8 +293,6 @@
                     link: 'https://www.canada.ca/en/immigration-refugees-citizenship/services/refugees/claim-canada.html'
                 }
             },
-            // Adicione mais dados para "Residência Temporária", "Residência Permanente", "Anistia", etc., para cada país
-            // Exemplo para Brasil (entrada como Refúgio)
             Brasil: {
                 Refugio: {
                     info: 'Processo de solicitação de refúgio no Brasil. Conforme a Lei nº 9.474/1997.',
@@ -289,6 +312,73 @@
         };
 
         // --- Funções de Lógica ---
+
+        function displayMessage(message, sender) {
+            const messageElement = document.createElement('div'); // Mudado para div para melhor controle de layout
+            messageElement.classList.add('p-3', 'rounded-lg', 'max-w-[80%]');
+            if (sender === 'user') {
+                messageElement.classList.add('bg-blue-100', 'self-end', 'ml-auto', 'text-right');
+                messageElement.innerHTML = `<strong>Você:</strong> ${message}`;
+            } else if (sender === 'gemini') {
+                messageElement.classList.add('bg-gray-100', 'mr-auto', 'text-left');
+                messageElement.innerHTML = `<strong>Assistente:</strong> ${message}`;
+            } else if (sender === 'error') {
+                messageElement.classList.add('bg-red-100', 'text-red-800', 'mr-auto', 'text-left');
+                messageElement.innerHTML = `<strong>Erro:</strong> ${message}`;
+            }
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll para o final
+        }
+
+        async function sendChatMessage() {
+            const userMessage = chatInput.value.trim();
+            if (!userMessage) return;
+
+            displayMessage(userMessage, 'user');
+            chatInput.value = '';
+            chatInput.disabled = true;
+            chatSendBtn.disabled = true;
+            chatLoading.classList.remove('hidden');
+            chatError.classList.add('hidden');
+
+            const paisOrigem = paisOrigemSelect.value;
+            const paisDestino = paisDestinoSelect.value;
+            const tipoServico = tipoEscolhido; // Pega o tipo de serviço selecionado pelos botões
+
+            try {
+                const response = await fetch(GEMINI_BACKEND_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: userMessage,
+                        paisOrigem: paisOrigem,
+                        paisDestino: paisDestino,
+                        tipoServico: tipoServico
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `Erro HTTP: ${response.status}`);
+                }
+
+                const data = await response.json();
+                displayMessage(data.reply, 'gemini');
+
+            } catch (error) {
+                console.error('Erro ao comunicar com o chatbot:', error);
+                chatError.textContent = `Ocorreu um erro: ${error.message}. Por favor, tente novamente.`;
+                chatError.classList.remove('hidden');
+                displayMessage('Não foi possível obter uma resposta do assistente.', 'error');
+            } finally {
+                chatInput.disabled = false;
+                chatSendBtn.disabled = false;
+                chatLoading.classList.add('hidden');
+                chatInput.focus();
+            }
+        }
 
         // Função para selecionar o tipo de serviço e atualizar a interface
         function selecionarTipo(event) {
@@ -328,7 +418,7 @@
                 msg += `✅ **Requisitos comuns:** ${infoOrigem.passaporte.requisitos || 'Consultar órgão oficial.'}\n`;
                 msg += `🔗 **Link oficial:** ${infoOrigem.passaporte.link || 'N/A'}\n\n`;
                 // Tenta adicionar o custo do passaporte ao total, se for numérico
-                const valorPassaporte = parseFloat(infoOrigem.passaporte.valor.replace(/[^\d,.]/g, '').replace(',', '.'));
+                const valorPassaporte = parseFloat(String(infoOrigem.passaporte.valor).replace(/[^\d,.]/g, '').replace(',', '.'));
                 if (!isNaN(valorPassaporte)) {
                     custoTotalEstimado += valorPassaporte;
                 }
@@ -346,7 +436,7 @@
                 msg += `📄 **Documentos e requisitos principais:** ${infoVisto.documentos}\n`;
                 msg += `🔗 **Link oficial:** ${infoVisto.link || 'N/A'}\n\n`;
                 // Tenta adicionar o custo da taxa oficial ao total
-                const valorVisto = parseFloat(infoVisto.custoTaxa.replace(/[^\d,.]/g, '').replace(',', '.'));
+                const valorVisto = parseFloat(String(infoVisto.custoTaxa).replace(/[^\d,.]/g, '').replace(',', '.'));
                 if (!isNaN(valorVisto)) {
                     custoTotalEstimado += valorVisto;
                 }
@@ -395,12 +485,18 @@
         // --- Event Listeners para acionar montarResultado ---
         paisOrigemSelect.addEventListener('change', montarResultado);
         paisDestinoSelect.addEventListener('change', montarResultado);
-        opcoesDiv.addEventListener('click', selecionarTipo); // Usa o novo handler
+        opcoesDiv.addEventListener('click', selecionarTipo); 
+
+        // Event Listeners para o chat Gemini (ADICIONADOS AQUI)
+        chatSendBtn.addEventListener('click', sendChatMessage);
+        chatInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
+        });
 
         // Inicializa o estado dos botões ao carregar a página
         document.addEventListener('DOMContentLoaded', () => {
-            // Se houver um tipo já selecionado (por exemplo, se você quiser pré-selecionar no futuro)
-            // Ou apenas garante que nenhum botão esteja selecionado no início
             document.querySelectorAll('#opcoes button').forEach(btn => {
                 btn.classList.remove('selected');
             });
